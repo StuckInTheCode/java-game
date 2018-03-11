@@ -11,17 +11,41 @@ import javafx.scene.shape.Rectangle;
  */
 public class Paddle extends Rectangle {
 
-	double velocity = 0.0;
+	private static final double SCREEN_WIDTH = 800;
+	private double velocity = 0.0;
 
 	public Paddle(double x, double y) {
 		this.setX(x);
 		this.setY(y);
 		this.setHeight(20);
 		this.setWidth(80);
-		this.setArcHeight(0.5);
-		this.setArcWidth(0.5);
+		this.setArcHeight(20);
+		this.setArcWidth(20);
 		this.setFill(Color.YELLOW);
 
+	}
+	void update() {
+		this.setTranslateX(this.getTranslateX()+ velocity * 7.0);
+	}
+
+	void stopMove() {
+		velocity = 0.0;
+	}
+
+	void moveLeft() {
+		if (this.getTranslateX() > (-SCREEN_WIDTH+this.getWidth())/2) {
+			velocity = -1.5;
+		} else {
+			velocity = 0.0;
+		}
+	}
+
+	void moveRight() {
+		if (this.getTranslateX() < (SCREEN_WIDTH-this.getWidth())/2) {
+			velocity = 1.5;
+		} else {
+			velocity = 0.0;
+		}
 	}
 
 

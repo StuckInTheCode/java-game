@@ -71,20 +71,21 @@ public class Main extends Application {
         MenuItem itemPlay = new MenuItem("PLAY");
         itemPlay.setOnActivate(() -> {
 			try {
-				window.setTitle("Star Arcanoid");
+				//window.setTitle("Star Arcanoid");
+                //Game_screen= MyGame.getScene();
 				window.setScene(Game_screen);
 				//window.setMaxWidth(800);
 			    //window.setMaxHeight(600);
-				window.sizeToScene();
-				window.setResizable(false);
+				//window.sizeToScene();
+				//window.setResizable(false);
 				MyGame.Game_Processing();
-			        AnimationTimer timer = new AnimationTimer() {
+			     /*   AnimationTimer timer = new AnimationTimer() {
 			            @Override
 			            public void handle(long now) {
 			              //  update();
 			            }
 			        };
-			        timer.start();
+			        timer.start();*/
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -220,7 +221,7 @@ public class Main extends Application {
         }
 
         /**
-         * Запускает исполняемый код
+         * Run the executable code
          */
         public void activate() {
             if (script != null)
@@ -247,6 +248,9 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
     	window=primaryStage;
+    	window.setResizable(false);
+    	window.sizeToScene();
+
         Game_screen=MyGame.set_scene();
         Menu_screen = new Scene(createContent());
         Menu_screen.setOnKeyPressed(event -> {
