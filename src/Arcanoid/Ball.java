@@ -26,7 +26,7 @@ public class Ball extends Circle{
         this.setTranslateX(this.getTranslateX() + velocityX * 5);
         this.setTranslateY(this.getTranslateY() + velocityY * 5);
 
-        if (this.getCenterX()+this.getTranslateX()<= 0)
+        /*if (this.getCenterX()+this.getTranslateX()<= 0)
             velocityX = BALL_VELOCITY;
         else if (this.getCenterX()+this.getTranslateX() >= SCREEN_WIDTH)
             velocityX = -BALL_VELOCITY;
@@ -36,8 +36,31 @@ public class Ball extends Circle{
             velocityY = -BALL_VELOCITY;
             this.setTranslateX(0);
             this.setTranslateY(0);
+        }*/
+        if (this.getCenterX()+this.getTranslateX()<= 0)
+            velocityX = -velocityX;
+        else if (this.getCenterX()+this.getTranslateX() >= SCREEN_WIDTH)
+            velocityX = -velocityX;
+        if (this.getCenterY()+this.getTranslateY() <= 0) {
+            velocityY = -velocityY;
+        } else if (this.getCenterY()+this.getTranslateY() >= SCREEN_HEIGHT) {
+            velocityY = -velocityY;
+            this.setTranslateX(0);
+            this.setTranslateY(0);
         }
 
+    }
+    boolean isMoveLeft()
+    {
+        if(this.velocityX<0)
+            return true;
+        return false;
+    }
+    boolean isMoveRight()
+    {
+        if(this.velocityX>0)
+            return true;
+        return false;
     }
 
 }

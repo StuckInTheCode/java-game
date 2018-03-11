@@ -32,6 +32,20 @@ public class Paddle extends Rectangle {
 		velocity = 0.0;
 	}
 
+	boolean isMoveLeft()
+	{
+		if(this.velocity<0)
+			return true;
+		return false;
+	}
+
+	boolean isMoveRight()
+	{
+		if(this.velocity>0)
+			return true;
+		return false;
+	}
+
 	void moveLeft() {
 		if (this.getTranslateX() > (-SCREEN_WIDTH+this.getWidth())/2) {
 			velocity = -1.5;

@@ -23,7 +23,7 @@ public class Block extends Rectangle{
 	}
 	void Delete()
 	{
-		//Game.gameRoot.getChildren().remove(this);
+		Game.gameRoot.getChildren().remove(this);
 		this.setVisible(false);
 	}
 

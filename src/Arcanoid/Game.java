@@ -1,19 +1,21 @@
 package Arcanoid;
 
-import com.sun.javafx.geom.Line2D;
 import javafx.animation.AnimationTimer;
-import javafx.geometry.Point2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
-import javafx.scene.shape.Line;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.math.*;
 
 /**
  * Class, that contains main game mechanic
@@ -25,13 +27,15 @@ public  class Game {
     private HashMap<KeyCode,Boolean> keys = new HashMap<>();
 
     private static boolean  running=true;
-    private Image backgroundImg = new Image("java.png");
-
+    private static Image backgroundImg = new Image("java.png");
+    ImageView backgroundIV;
     private static final int BLOCK_SIZE = 31;
     /** Containers of elements of the main node and game content */
 	private static Pane appRoot = new Pane();
 	public static Pane gameRoot = new Pane();
 	/**Game scene*/
+	private static Text scorefield;
+    private static Text score = new Text("0");
 	private static Scene scene;
     private static AnimationTimer timer;
 	private Ball ball;
@@ -43,29 +47,53 @@ public  class Game {
      * @return Parent
      */
     private Parent initContent(){
-        ImageView backgroundIV = new ImageView(backgroundImg);
+        backgroundIV = new ImageView(backgroundImg);
 
         backgroundIV.autosize();
-        
-        Scroll_backgroundIV();
+
         backgroundIV.setLayoutY(-(600*(3-levelNumber)));
 
         Create_blocks(Level_data.levels[levelNumber]);
- 
+
+        scorefield = new Text("Your score:");
+        scorefield.setX(700);
+        scorefield.setY(50);
+        score.setX(760);
+        score.setY(50);
+
         player = new Paddle(360,500);
-        //player.setTranslateX(360);
-        //player.setTranslateY(500);
         ball= new Ball(400,490);
+
         gameRoot.getChildren().add(player);
         appRoot.setPrefSize(800,600);
         appRoot.setMaxSize(800,600);
-        appRoot.getChildren().addAll(backgroundIV,gameRoot);
+        appRoot.getChildren().addAll(backgroundIV,scorefield,score,gameRoot);
         return appRoot;
     }
 
-    private void Scroll_backgroundIV() {
-	// TODO Auto-generated method stub
-	
+    private void scrollBackgroundIV() {
+        int step = 1;                                         //doesnt work finally
+        double current = backgroundIV.getLayoutY();
+        //ScrollPane pane= new ScrollPane();
+        while (current < (-600 * (3 - levelNumber))) {
+            // try {
+            //     Thread.sleep(30);
+            current = backgroundIV.getLayoutY();
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            //System.out.println(current);
+            backgroundIV.setLayoutY(current + step);
+        }
+    }
+
+    private void goToNewLevel() {
+        levelNumber++;
+        scrollBackgroundIV();
+        Create_blocks(Level_data.levels[levelNumber]);
+
     }
    private boolean isIntersectingPaddleBall(Paddle pl, Ball bk) {
        if(bk.getCenterY()+bk.getTranslateY()>=pl.getY())
@@ -121,6 +149,10 @@ public  class Game {
 	}
     private void update(){
 	    int i=0;
+	    if(blocks.size()==0)
+        {
+            goToNewLevel();
+        }
         while(i<blocks.size())
         {
             Block buffer=blocks.get(i);
@@ -129,13 +161,19 @@ public  class Game {
             {
                 buffer.setVisible(false);
                 blocks.remove(buffer);
+                int your_score=Integer.parseInt(score.getText());
+                score.setText(Integer.toString(your_score+1));
             }
             else
                 i++;
         }
         if(isIntersectingPaddleBall(player,ball))
         {
-            ball.velocityY = -ball.velocityY;
+            ball.velocityY=-ball.velocityY;
+            if((player.isMoveLeft() && ball.isMoveRight() )|| (player.isMoveRight() && ball.isMoveLeft()))
+                ball.velocityX -= 0.2;
+            if((player.isMoveLeft() && ball.isMoveLeft() )|| (player.isMoveRight() && ball.isMoveRight()))
+                ball.velocityX += 0.2;
         }
 	    ball.update(player);
 
@@ -160,7 +198,7 @@ public  class Game {
             System.out.println("And now");
             System.out.println(player.getTranslateX());
         }
-        if(isPressed(KeyCode.RIGHT)){
+        else if(isPressed(KeyCode.RIGHT)){
             System.out.println("Pressed Right!");
             System.out.println("I've been here");
             System.out.println(player.getTranslateX());
@@ -169,8 +207,14 @@ public  class Game {
             System.out.println("And now");
             System.out.println(player.getTranslateX());
         }
+        else
+            player.stopMove();
 
     }
+
+
+
+
     private boolean isPressed(KeyCode key){
         return keys.getOrDefault(key,false);
     }
@@ -191,9 +235,9 @@ public  class Game {
         return scene;
     }
 
-    public  Scene  getScene() {
+    /*public  Scene  getScene() {
         return scene;
-    }
+    }*/
     /**Game processing
      *
      */

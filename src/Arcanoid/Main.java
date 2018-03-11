@@ -21,7 +21,7 @@ import javafx.stage.Stage;
 
 /** Class generate a main menu and submenus of the game
  * @author Kovbasa G.A.
- * @version 0.0
+ * @version 0.1
  */
 public class Main extends Application {
 
@@ -114,12 +114,17 @@ public class Main extends Application {
         menuBox.setTranslateX(0);
         menuBox.setTranslateY(300);
         
-       Text about = new Text("Star Arcanoid");
-       
-       about.setTranslateX(250);
+       //Text about = new Text("Star Arcanoid");
+       Image about = new Image("arcanoid.png");
+       ImageView aboutIV= new ImageView(about);
+       aboutIV.setFitHeight(120);
+       aboutIV.setFitWidth(520);
+       aboutIV.setY(50);
+       aboutIV.setX(200);
+       /*about.setTranslateX(250);
        about.setTranslateY(100);
        about.setFill(Color.BLUEVIOLET);
-       about.setFont(FONT);
+       about.setFont(FONT);*/
 
        menuBox.getMenuItem(0).setActive(true);
 
@@ -138,7 +143,7 @@ public class Main extends Application {
 
         }*/
 
-       menuRoot.getChildren().addAll(backgroundIV,menuBox, about);
+       menuRoot.getChildren().addAll(backgroundIV,menuBox, aboutIV);
 
        return menuRoot;
     }
