@@ -13,15 +13,19 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
-
+import Arcanoid.Block.BlockType;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import static Arcanoid.Block.createBlock;
 
 /**
  * Class, that contains main game mechanic
  */
 public  class Game {
     private static final double BALL_VELOCITY = 1;
+    private static final double MAX_SPEED_OF_BALL = 1.4;
+    private static final double MIN_SPEED_OF_BALL = 0.6;
     /**Container for storing elements (blocks) for the current level*/
     private ArrayList<Block> blocks = new ArrayList<>();
     private HashMap<KeyCode,Boolean> keys = new HashMap<>();
@@ -80,7 +84,7 @@ public  class Game {
             //     Thread.sleep(30);
             current = backgroundIV.getLayoutY();
             try {
-                Thread.sleep(10);
+                Thread.sleep(2);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -96,26 +100,70 @@ public  class Game {
 
     }
    private boolean isIntersectingPaddleBall(Paddle pl, Ball bk) {
-       if(bk.getCenterY()+bk.getTranslateY()>=pl.getY())
-        if(bk.getCenterX()+bk.getTranslateX()<=pl.getX()+pl.getTranslateX()+pl.getWidth() &&
-                bk.getCenterX()+bk.getTranslateX()>= pl.getX()+pl.getTranslateX())
-           return true;
+       if(bk.getCenterY()+bk.getTranslateY()>=pl.getY() && bk.getCenterY()+bk.getTranslateY()<pl.getY()+pl.getHeight())
+           return bk.getCenterX() + bk.getTranslateX() <= pl.getX() + pl.getTranslateX() + pl.getWidth() &&
+                   bk.getCenterX() + bk.getTranslateX() >= pl.getX() + pl.getTranslateX();
        return false;
     }
     private boolean isIntersectingBlockBall(Block bl, Ball bk) {
-        double overlapXLeft=Math.abs(bk.getCenterX()+bk.getTranslateX()- bl.getX());
-        double overlapXRight=Math.abs(bk.getCenterX()+bk.getTranslateX()- bl.getX()-bl.getWidth());
-        double overlapYTop=Math.abs(bk.getCenterY()+bk.getTranslateY()-bl.getY());
-        double overlapYBottom=Math.abs(bk.getCenterY()+bk.getTranslateY()-bl.getY()-bl.getHeight());
+        double overlapXLeft;//Math.abs(bk.getCenterX()+bk.getTranslateX()- bl.getX());
+        overlapXLeft=bk.center.distance(bl.topleft);
+        //if()
+        //double x=bk.center.distance(bk.top);
+        //System.out.println(bk.center);
+        //System.out.println(bl.topleft);
+        double overlapXRight;//=Math.abs(bk.getCenterX()+bk.getTranslateX()- bl.getX()-bl.getWidth());
+        double overlapYTop;//=Math.abs(bk.getCenterY()+bk.getTranslateY()-bl.getY());
+        double overlapYBottom;//=Math.abs(bk.getCenterY()+bk.getTranslateY()-bl.getY()-bl.getHeight());
+        overlapXRight=bk.center.distance(bl.bottomleft);
+        overlapYTop=bk.center.distance(bl.topright);
+        overlapYBottom=bk.center.distance(bl.bottomright);
+        boolean ball_from_left=overlapXLeft<overlapXRight;
+        boolean ball_from_top=overlapYTop<overlapYBottom;
+        double overlapx=ball_from_left?overlapXLeft:overlapXRight;
+        double overlapy=ball_from_top?overlapYTop:overlapYBottom;
+        //System.out.println("overlap");
+        //System.out.println(overlapx);
+        //System.out.println(overlapy);
         double minimalIntersection=bk.getRadius();
-        if((overlapXLeft<=minimalIntersection||overlapXRight<=minimalIntersection) &&
+       /* if((overlapXLeft<=minimalIntersection||overlapXRight<=minimalIntersection) &&
                 (overlapYTop<=minimalIntersection || overlapYBottom<=minimalIntersection)){ //if(overlapYTop<=minimalIntersection || overlapYBottom<=minimalIntersection)
             return true;
+        }*/
+
+       if(overlapx==minimalIntersection || overlapy==minimalIntersection)
+           return true;
+        //overlapx=bk.center.distance(bl.topleft);
+        if(ball_from_top)
+            if(ball_from_left) {
+                overlapx = bk.right.distance(bl.topleft);
+                overlapy = bk.bottom.distance(bl.topleft);
+                return overlapx <= minimalIntersection || overlapy <= minimalIntersection;
+            }
+            else{
+                overlapx = bk.left.distance(bl.topright);
+                overlapy = bk.bottom.distance(bl.topright);
+                return overlapx <= minimalIntersection || overlapy <= minimalIntersection;
+            }
+        else {
+            if(ball_from_left) {
+                overlapx = bk.right.distance(bl.bottomleft);
+                overlapy = bk.top.distance(bl.bottomleft);
+                return overlapx <= minimalIntersection || overlapy <= minimalIntersection;
+            }
+            else{
+                overlapx = bk.left.distance(bl.bottomright);
+                overlapy = bk.top.distance(bl.bottomright);
+                return overlapx <= minimalIntersection || overlapy <= minimalIntersection;
+            }
         }
-        return false;
     }
 
-    private void testCollision(Block mBlock, Ball mBall) {
+    public static boolean isRunning() {
+        return running;
+    }
+
+     void testCollision(Block mBlock, Ball mBall) {
         if (!isIntersectingBlockBall(mBlock, mBall))
             return;
 
@@ -139,7 +187,25 @@ public  class Game {
                     case '0':
                         break;
                     case '1':
-                    	blocks.add(new Block (j*BLOCK_SIZE, i*BLOCK_SIZE));
+                    	blocks.add(createBlock (j*BLOCK_SIZE, i*BLOCK_SIZE,Block.BlockType.BUBBLE));
+                        break;
+                    case '2':
+                        blocks.add(new Block (j*BLOCK_SIZE, i*BLOCK_SIZE));
+                        break;
+                    case '3':
+                        blocks.add(createBlock (j*BLOCK_SIZE, i*BLOCK_SIZE, Block.BlockType.BONUS));
+                        break;
+                    case '4':
+                        blocks.add(createBlock (j*BLOCK_SIZE, i*BLOCK_SIZE, Block.BlockType.BRICK));
+                        break;
+                    case '5':
+                        blocks.add(createBlock (j*BLOCK_SIZE, i*BLOCK_SIZE, Block.BlockType.STONE));
+                        break;
+                    case '6':
+                        blocks.add(createBlock (j*BLOCK_SIZE, i*BLOCK_SIZE, Block.BlockType.DIAMAND));
+                        break;
+                    case '7':
+                        blocks.add(createBlock (j*BLOCK_SIZE, i*BLOCK_SIZE, Block.BlockType.UNBREAKABLE_BLOCK));
                         break;
             }
 
@@ -167,15 +233,16 @@ public  class Game {
             else
                 i++;
         }
+
+	    ball.update(player);
         if(isIntersectingPaddleBall(player,ball))
         {
             ball.velocityY=-ball.velocityY;
             if((player.isMoveLeft() && ball.isMoveRight() )|| (player.isMoveRight() && ball.isMoveLeft()))
-                ball.velocityX -= 0.2;
+                ball.velocityX =ball.velocityX==MIN_SPEED_OF_BALL?ball.velocityX:ball.velocityX-0.2 ;
             if((player.isMoveLeft() && ball.isMoveLeft() )|| (player.isMoveRight() && ball.isMoveRight()))
-                ball.velocityX += 0.2;
+                ball.velocityX =ball.velocityX==MAX_SPEED_OF_BALL?ball.velocityX:ball.velocityX+0.2 ;
         }
-	    ball.update(player);
 
         if (isPressed(KeyCode.ESCAPE)) {
             //timer.stop();
@@ -190,22 +257,22 @@ public  class Game {
             System.out.println(running);
         }
         if(isPressed(KeyCode.LEFT)){
-            System.out.println("Pressed left!");
+           /* System.out.println("Pressed left!");
             System.out.println("I've been here");
-            System.out.println(player.getTranslateX());
+            System.out.println(player.getTranslateX());*/
             player.moveLeft();
             player.update();
-            System.out.println("And now");
-            System.out.println(player.getTranslateX());
+          /*  System.out.println("And now");
+            System.out.println(player.getTranslateX());*/
         }
         else if(isPressed(KeyCode.RIGHT)){
-            System.out.println("Pressed Right!");
+          /*  System.out.println("Pressed Right!");
             System.out.println("I've been here");
-            System.out.println(player.getTranslateX());
+            System.out.println(player.getTranslateX());*/
            player.moveRight();
             player.update();
-            System.out.println("And now");
-            System.out.println(player.getTranslateX());
+          /*  System.out.println("And now");
+            System.out.println(player.getTranslateX());*/
         }
         else
             player.stopMove();
@@ -223,7 +290,7 @@ public  class Game {
      * @return Scene
      * @throws Exception
      */
-    public  Scene  set_scene() throws Exception {
+    public  Scene  set_scene() {
         initContent();
 
         scene = new Scene(appRoot,800,600);

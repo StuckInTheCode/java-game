@@ -1,5 +1,6 @@
 package Arcanoid;
 
+import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 
 import javafx.scene.shape.Circle;
@@ -10,6 +11,11 @@ import javafx.scene.shape.Circle;
  */
 public class Ball extends Circle{
     private static final double BALL_VELOCITY = 1.0;
+    Point2D top;
+    Point2D bottom;
+    Point2D left;
+    Point2D right;
+    Point2D center;
     double velocityX=1;
     double velocityY=-1;
     private static final double SCREEN_WIDTH=800;
@@ -19,13 +25,33 @@ public class Ball extends Circle{
         this.setCenterX(x);
         this.setCenterY(y);
         this.setRadius(8);
+        this.top=new Point2D(x,y+8);
+        this.bottom=new Point2D(x,y-8);
+        this.left=new Point2D(x-8,y);
+        this.right=new Point2D(x+8,y);
+        this.center= new Point2D(x,y);
+
         this.setFill(Color.CORAL);
         Game.gameRoot.getChildren().add(this);
     }
     void update(Paddle paddle) {
-        this.setTranslateX(this.getTranslateX() + velocityX * 5);
-        this.setTranslateY(this.getTranslateY() + velocityY * 5);
-
+        double newX = this.getTranslateX() + velocityX * 5;
+        double newY = this.getTranslateY() + velocityY * 5;
+        //this.setTranslateX(this.getTranslateX() + velocityX * 5);
+        //this.setTranslateY(this.getTranslateY() + velocityY * 5);
+        this.setTranslateX(newX);
+        this.setTranslateY(newY);
+        this.top= new Point2D (this.getCenterX()+newX,this.getCenterY()+newY+8);
+        this.bottom= new Point2D (this.getCenterX()+newX,this.getCenterY()+newY-8);
+        this.left= new Point2D (this.getCenterX()+newX-8,this.getCenterY()+newY);
+        this.right= new Point2D (this.getCenterX()+newX+8,this.getCenterY()+newY);
+        /*System.out.println("Ball");
+        System.out.println(this.getTranslateX());
+        System.out.println(this.getTranslateY());
+        System.out.println(this.center);*/
+        //this.center.add(newX,newY);
+        this.center= new Point2D (this.getCenterX()+newX,this.getCenterY()+newY);
+        //System.out.println(this.center);
         /*if (this.getCenterX()+this.getTranslateX()<= 0)
             velocityX = BALL_VELOCITY;
         else if (this.getCenterX()+this.getTranslateX() >= SCREEN_WIDTH)
@@ -52,15 +78,11 @@ public class Ball extends Circle{
     }
     boolean isMoveLeft()
     {
-        if(this.velocityX<0)
-            return true;
-        return false;
+        return this.velocityX < 0;
     }
     boolean isMoveRight()
     {
-        if(this.velocityX>0)
-            return true;
-        return false;
+        return this.velocityX > 0;
     }
 
 }
