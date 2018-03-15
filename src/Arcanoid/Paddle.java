@@ -1,9 +1,10 @@
 package Arcanoid;
 
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+
 //import java.awt.Color;
 //import java.awt.Graphics;
-import javafx.scene.shape.Rectangle;
 
 /**
  * Class Paddle
@@ -19,8 +20,6 @@ public class Paddle extends Rectangle {
 		this.setY(y);
 		this.setHeight(20);
 		this.setWidth(80);
-		this.setArcHeight(20);
-		this.setArcWidth(20);
 		this.setFill(Color.YELLOW);
 
 	}
@@ -34,16 +33,12 @@ public class Paddle extends Rectangle {
 
 	boolean isMoveLeft()
 	{
-		if(this.velocity<0)
-			return true;
-		return false;
+		return this.velocity < 0;
 	}
 
 	boolean isMoveRight()
 	{
-		if(this.velocity>0)
-			return true;
-		return false;
+		return this.velocity > 0;
 	}
 
 	void moveLeft() {

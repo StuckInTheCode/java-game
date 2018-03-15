@@ -21,7 +21,7 @@ import javafx.stage.Stage;
 
 /** Class generate a main menu and submenus of the game
  * @author Kovbasa G.A.
- * @version 0.1
+ * @version 0.2
  */
 public class Main extends Application {
 
@@ -72,12 +72,7 @@ public class Main extends Application {
         itemPlay.setOnActivate(() -> {
 			try {
 				//window.setTitle("Star Arcanoid");
-                //Game_screen= MyGame.getScene();
 				window.setScene(Game_screen);
-				//window.setMaxWidth(800);
-			    //window.setMaxHeight(600);
-				//window.sizeToScene();
-				//window.setResizable(false);
 				MyGame.Game_Processing();
 			     /*   AnimationTimer timer = new AnimationTimer() {
 			            @Override
@@ -251,7 +246,7 @@ public class Main extends Application {
      * @throws Exception
      */
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
     	window=primaryStage;
     	window.setResizable(false);
     	window.sizeToScene();
@@ -267,7 +262,7 @@ public class Main extends Application {
             }
 
             if (event.getCode() == KeyCode.DOWN) {
-                if (currentItem < menuBox.subMenu.getChildren().size() - 1) {
+                if (currentItem < MenuBox.subMenu.getChildren().size() - 1) {
                 	menuBox.getMenuItem(currentItem).setActive(false);
                 	menuBox.getMenuItem(++currentItem).setActive(true);
                 }

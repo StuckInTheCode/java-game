@@ -1,8 +1,9 @@
 package Arcanoid;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
-
 import javafx.scene.shape.Circle;
 
 /**
@@ -10,6 +11,7 @@ import javafx.scene.shape.Circle;
  * @version 0.1 - Inherited from Circle
  */
 public class Ball extends Circle{
+
     private static final double BALL_VELOCITY = 1.0;
     Point2D top;
     Point2D bottom;
@@ -25,14 +27,55 @@ public class Ball extends Circle{
         this.setCenterX(x);
         this.setCenterY(y);
         this.setRadius(8);
+        //this.localToParent(this.getBoundsInLocal());
         this.top=new Point2D(x,y+8);
         this.bottom=new Point2D(x,y-8);
         this.left=new Point2D(x-8,y);
         this.right=new Point2D(x+8,y);
         this.center= new Point2D(x,y);
+        this.translateXProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                if (testBlockNBallCollision())
+                    changeDirectionX();
+            }
 
+
+        });
+        this.translateYProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                if (testBlockNBallCollision())
+                    changeDirectionY();
+            }
+
+        });
         this.setFill(Color.CORAL);
         Game.gameRoot.getChildren().add(this);
+    }
+
+    boolean testBlockNBallCollision() {
+        boolean collision = false;
+        for (Block block : Game.blocks) {
+
+            if (!block.getBoundsInParent().intersects(this.getBoundsInParent()))
+                continue;
+            collision = true;
+            //block.destroyed = true;
+            block.Delete();
+            block.setVisible(false);
+            Game.blocks.remove(block);
+            break;
+        }
+        return collision;
+    }
+
+    void changeDirectionX() {
+        this.velocityX = -this.velocityX;
+    }
+
+    void changeDirectionY() {
+        this.velocityY = -this.velocityY;
     }
     void update(Paddle paddle) {
         double newX = this.getTranslateX() + velocityX * 5;
@@ -41,17 +84,14 @@ public class Ball extends Circle{
         //this.setTranslateY(this.getTranslateY() + velocityY * 5);
         this.setTranslateX(newX);
         this.setTranslateY(newY);
+
         this.top= new Point2D (this.getCenterX()+newX,this.getCenterY()+newY+8);
         this.bottom= new Point2D (this.getCenterX()+newX,this.getCenterY()+newY-8);
         this.left= new Point2D (this.getCenterX()+newX-8,this.getCenterY()+newY);
         this.right= new Point2D (this.getCenterX()+newX+8,this.getCenterY()+newY);
-        /*System.out.println("Ball");
-        System.out.println(this.getTranslateX());
-        System.out.println(this.getTranslateY());
-        System.out.println(this.center);*/
+        //boolean movingRight = value > 0;
         //this.center.add(newX,newY);
         this.center= new Point2D (this.getCenterX()+newX,this.getCenterY()+newY);
-        //System.out.println(this.center);
         /*if (this.getCenterX()+this.getTranslateX()<= 0)
             velocityX = BALL_VELOCITY;
         else if (this.getCenterX()+this.getTranslateX() >= SCREEN_WIDTH)
@@ -76,8 +116,8 @@ public class Ball extends Circle{
         }
 
     }
-    boolean isMoveLeft()
-    {
+
+    boolean isMoveLeft() {
         return this.velocityX < 0;
     }
     boolean isMoveRight()
@@ -85,4 +125,11 @@ public class Ball extends Circle{
         return this.velocityX > 0;
     }
 
+    boolean isMoveDown() {
+        return this.velocityY < 0;
+    }
+
+    boolean isMoveUp() {
+        return this.velocityY > 0;
+    }
 }

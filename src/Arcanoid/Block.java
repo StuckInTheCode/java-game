@@ -1,9 +1,7 @@
 package Arcanoid;
 
-import Arcanoid.Line2D;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.LineTo;
 import javafx.scene.shape.Rectangle;
 
 /**
@@ -17,11 +15,6 @@ public class Block extends Rectangle{
     Point2D bottomleft;
     Point2D bottomright;
     int breakable=0;
-    /*Line2D top;
-    Line2D bottom;
-    Line2D left;
-    Line2D right;
-    LineTo x;*/
     public enum BlockType {
         BUBBLE, CRYSTALL, BONUS, BRICK, STONE, DIAMAND, UNBREAKABLE_BLOCK
     }
@@ -32,13 +25,9 @@ public class Block extends Rectangle{
 		this.setHeight(30);
 		this.setWidth(30);
         this.topleft=new Point2D(x,y);
-        System.out.println(topleft);
         this.bottomleft=new Point2D(x,y+30);
-        System.out.println(bottomleft);
         this.topright=new Point2D(x+30,y);
-        System.out.println(bottomleft);
         this.bottomright=new Point2D(x+30,y+30);
-        //this.top= new Line2D(topleft,topright);
 		this.setFill(Color.BLUE);
 	     Game.gameRoot.getChildren().add(this);
 	}
