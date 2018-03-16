@@ -58,14 +58,14 @@ public class Ball extends Circle{
         boolean collision = false;
         for (Block block : Game.blocks) {
 
-            if (!block.getBoundsInParent().intersects(this.getBoundsInParent()))
-                continue;
-            collision = true;
-            //block.destroyed = true;
-            block.Delete();
-            block.setVisible(false);
-            Game.blocks.remove(block);
-            break;
+            if (block.getBoundsInParent().intersects(this.getBoundsInParent())) {
+                collision = true;
+                block.destroyed = true;
+                //block.Delete();
+                block.setVisible(false);
+                //Game.blocks.remove(block);
+                break;
+            }
         }
         return collision;
     }
@@ -111,12 +111,17 @@ public class Ball extends Circle{
             velocityY = -velocityY;
         } else if (this.getCenterY()+this.getTranslateY() >= SCREEN_HEIGHT) {
             velocityY = -velocityY;
+            Game.lives--;
             this.setTranslateX(0);
             this.setTranslateY(0);
         }
 
     }
 
+    void increaseSpeed() {
+        this.velocityX = this.velocityX + 0.2;
+        this.velocityY = this.velocityY + 0.2;
+    }
     boolean isMoveLeft() {
         return this.velocityX < 0;
     }

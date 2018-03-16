@@ -37,9 +37,10 @@ public class Game {
     private static Text score = new Text("0");
 	private static Scene scene;
     private static AnimationTimer timer;
-	private Ball ball;
-    private Paddle player;
+    public static Paddle player;
+    public static int lives = 3;
     private int levelNumber = 0;
+    private static Ball ball;
 
     /**Initialization content on the scene
      *
@@ -209,8 +210,12 @@ public class Game {
         }
 	
 	}
+
     private void update(){
 	    int i=0;
+        if (lives == 0) {
+            timer.stop();
+        }
 	    if(blocks.size()==0)
         {
             goToNewLevel();
@@ -219,10 +224,17 @@ public class Game {
         {
             Block buffer=blocks.get(i);
             //testCollision(buffer, ball);
+            /*if(buffer.bonus.isCatched)
+            {
+                //buffer.bonus.useBonus(player,ball);
+                buffer.bonus.setVisible(false);
+            }*/
             if(buffer.isDestroyed())
             {
                 //buffer.setVisible(false);
                 //blocks.remove(buffer);
+                blocks.remove(buffer);
+                buffer.bonus.translateTransition.play();
                 int your_score=Integer.parseInt(score.getText());
                 score.setText(Integer.toString(your_score+1));
             }

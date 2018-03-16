@@ -1,8 +1,10 @@
 package Arcanoid;
 
+import javafx.animation.TranslateTransition;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.util.Duration;
 
 /**
  * Class Block
@@ -10,6 +12,7 @@ import javafx.scene.shape.Rectangle;
  */
 public class Block extends Rectangle{
 	boolean destroyed = false;
+    public Bonus bonus;
     Point2D topleft;
     Point2D topright;
     Point2D bottomleft;
@@ -29,11 +32,13 @@ public class Block extends Rectangle{
         this.topright=new Point2D(x+30,y);
         this.bottomright=new Point2D(x+30,y+30);
 		this.setFill(Color.BLUE);
+        this.bonus = new Bonus(Bonus.BONUS_TYPE.FROZEN, y);
 	     Game.gameRoot.getChildren().add(this);
 	}
     public static Block  createBlock(double x, double y,BlockType type)
     {
         Block block = new Block(x, y);
+
         switch(type)
         {
             case BUBBLE:
