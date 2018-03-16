@@ -12,7 +12,7 @@ import javafx.util.Duration;
  */
 public class Block extends Rectangle{
 	boolean destroyed = false;
-    public Bonus bonus;
+    public final Bonus bonus;
     Point2D topleft;
     Point2D topright;
     Point2D bottomleft;
@@ -33,7 +33,7 @@ public class Block extends Rectangle{
         this.bottomright=new Point2D(x+30,y+30);
 		this.setFill(Color.BLUE);
         this.bonus = new Bonus(Bonus.BONUS_TYPE.FROZEN, y);
-	     Game.gameRoot.getChildren().add(this);
+        Game.gameRoot.getChildren().add(this);
 	}
     public static Block  createBlock(double x, double y,BlockType type)
     {

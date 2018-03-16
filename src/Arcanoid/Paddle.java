@@ -13,6 +13,7 @@ import javafx.scene.shape.Rectangle;
 public class Paddle extends Rectangle {
 
 	private static final double SCREEN_WIDTH = 800;
+	private static double VELOCITY = 1.0;
 	private double velocity = 0.0;
 
 	public Paddle(double x, double y) {
@@ -24,7 +25,7 @@ public class Paddle extends Rectangle {
 
 	}
 	void update() {
-		this.setTranslateX(this.getTranslateX()+ velocity * 7.0);
+		this.setTranslateX(this.getTranslateX()+ velocity * 5 );
 	}
 
 	void stopMove() {
@@ -41,17 +42,29 @@ public class Paddle extends Rectangle {
 		return this.velocity > 0;
 	}
 
+	boolean isMoving()
+	{
+		return velocity!=0;
+	}
 	void moveLeft() {
 		if (this.getTranslateX() > (-SCREEN_WIDTH+this.getWidth())/2) {
-			velocity = -1.5;
+			velocity = -VELOCITY;
 		} else {
 			velocity = 0.0;
 		}
 	}
-
+	void setVelocity(double d)
+	{
+		VELOCITY=Math.abs(d);
+	}
+	void goToStartPosition()
+	{
+		this.setTranslateX(0);
+		this.setTranslateY(0);
+	}
 	void moveRight() {
 		if (this.getTranslateX() < (SCREEN_WIDTH-this.getWidth())/2) {
-			velocity = 1.5;
+			velocity = VELOCITY;
 		} else {
 			velocity = 0.0;
 		}

@@ -1,6 +1,7 @@
 package Arcanoid;
 
 import javafx.animation.ParallelTransition;
+import javafx.animation.Timeline;
 import javafx.animation.TranslateTransition;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -32,15 +33,7 @@ public class Bonus extends Pane{
         translateTransition.setFromY(y);
         translateTransition.setToY(600);
         translateTransition.setCycleCount(1);
-        bonusIV.translateYProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                if(testPaddleCollision()) {
-                    parallelTransition.stop();
-                    isCatched=true;
-                }
-            }
-        });
+
         bonusIV.setFitWidth(30);
         bonusIV.setFitHeight(30);
         switch(type)
@@ -66,12 +59,21 @@ public class Bonus extends Pane{
 
             }
         }
-        /*parallelTransition = new ParallelTransition();
+        parallelTransition = new ParallelTransition();
         parallelTransition.getChildren().addAll(
                 translateTransition,
                 animation
         );
-        parallelTransition.setCycleCount(Timeline.INDEFINITE);*/
+        parallelTransition.setCycleCount(Timeline.INDEFINITE);
+        bonusIV.translateYProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                if(testPaddleCollision()) {
+                    parallelTransition.stop();
+                    isCatched=true;
+                }
+            }
+        });
 
         //parallelTransition.play();
     }

@@ -12,14 +12,14 @@ import javafx.scene.shape.Circle;
  */
 public class Ball extends Circle{
 
-    private static final double BALL_VELOCITY = 1.0;
+    public static final double BALL_VELOCITY = 1.0;
     Point2D top;
     Point2D bottom;
     Point2D left;
     Point2D right;
     Point2D center;
-    double velocityX=1;
-    double velocityY=-1;
+    double velocityX=0;
+    double velocityY=-0;
     private static final double SCREEN_WIDTH=800;
     private static final double SCREEN_HEIGHT=600;
 
@@ -51,7 +51,7 @@ public class Ball extends Circle{
 
         });
         this.setFill(Color.CORAL);
-        Game.gameRoot.getChildren().add(this);
+        //Game.gameRoot.getChildren().add(this);
     }
 
     boolean testBlockNBallCollision() {
@@ -77,7 +77,8 @@ public class Ball extends Circle{
     void changeDirectionY() {
         this.velocityY = -this.velocityY;
     }
-    void update(Paddle paddle) {
+    boolean update(Paddle paddle) {
+        boolean ball_fall=false;
         double newX = this.getTranslateX() + velocityX * 5;
         double newY = this.getTranslateY() + velocityY * 5;
         //this.setTranslateX(this.getTranslateX() + velocityX * 5);
@@ -103,6 +104,8 @@ public class Ball extends Circle{
             this.setTranslateX(0);
             this.setTranslateY(0);
         }*/
+        if(paddle.isMoving() && !this.isMoving())
+            starting();
         if (this.getCenterX()+this.getTranslateX()<= 0)
             velocityX = -velocityX;
         else if (this.getCenterX()+this.getTranslateX() >= SCREEN_WIDTH)
@@ -111,10 +114,12 @@ public class Ball extends Circle{
             velocityY = -velocityY;
         } else if (this.getCenterY()+this.getTranslateY() >= SCREEN_HEIGHT) {
             velocityY = -velocityY;
-            Game.lives--;
-            this.setTranslateX(0);
-            this.setTranslateY(0);
+            ball_fall=true;
+            goToStartPosition();
+            /*this.setTranslateX(0);
+            this.setTranslateY(0);*/
         }
+        return ball_fall;
 
     }
 
@@ -131,10 +136,26 @@ public class Ball extends Circle{
     }
 
     boolean isMoveDown() {
-        return this.velocityY < 0;
+        return this.velocityY > 0;
     }
 
     boolean isMoveUp() {
-        return this.velocityY > 0;
+        return this.velocityY < 0;
+    }
+    boolean isMoving()
+    {
+        return velocityX!=0 && velocityY!=0;
+    }
+    void goToStartPosition()
+    {
+        this.setTranslateX(0);
+        this.setTranslateY(0);
+        this.velocityX=0;
+        this.velocityY=0;
+    }
+    void starting()
+    {
+        velocityX=BALL_VELOCITY;
+        velocityY=-BALL_VELOCITY;
     }
 }

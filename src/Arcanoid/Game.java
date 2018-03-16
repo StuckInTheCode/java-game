@@ -1,6 +1,7 @@
 package Arcanoid;
 
 import javafx.animation.AnimationTimer;
+import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -24,23 +25,26 @@ public class Game {
     /**Container for storing elements (blocks) for the current level*/
     public static ArrayList<Block> blocks = new ArrayList<>();
     private HashMap<KeyCode,Boolean> keys = new HashMap<>();
-
-    private static boolean  running=true;
+    private static boolean  running = false;
     private static Image backgroundImg = new Image("java.png");
     ImageView backgroundIV;
     private static final int BLOCK_SIZE = 31;
     /** Containers of elements of the main node and game content */
-	private static Pane appRoot = new Pane();
+	private  Pane appRoot = new Pane();
 	public static Pane gameRoot = new Pane();
+    private  Group root= new Group();
 	/**Game scene*/
-	private static Text scorefield;
-    private static Text score = new Text("0");
-	private static Scene scene;
-    private static AnimationTimer timer;
+	private  Text scorefield;
+    private  Text lifefield;
+    private  Text lives;
+    public int Life;
+    private  Text score;
+	private  Scene scene=null;
+    private  AnimationTimer timer;
     public static Paddle player;
-    public static int lives = 3;
-    private int levelNumber = 0;
-    private static Ball ball;
+    public static int levelNumber=0;
+    private final int colvoOfLevels=2;
+    private  Ball ball;
 
     /**Initialization content on the scene
      *
@@ -48,26 +52,32 @@ public class Game {
      */
     private Parent initContent(){
         backgroundIV = new ImageView(backgroundImg);
-
         backgroundIV.autosize();
-
         backgroundIV.setLayoutY(-(600*(3-levelNumber)));
 
+        System.out.println(levelNumber);
         Create_blocks(Level_data.levels[levelNumber]);
 
         scorefield = new Text("Your score:");
         scorefield.setX(700);
         scorefield.setY(50);
+        score = new Text("0");
         score.setX(760);
         score.setY(50);
-
+        lifefield = new Text("Your life:");
+        lifefield.setX(700);
+        lifefield.setY(65);
+        lives= new Text("3");
+        lives.setX(760);
+        lives.setY(65);
+        Life=3;
         player = new Paddle(360,500);
         ball= new Ball(400,490);
-
+        gameRoot.getChildren().add(ball);
         gameRoot.getChildren().add(player);
         appRoot.setPrefSize(800,600);
         appRoot.setMaxSize(800,600);
-        appRoot.getChildren().addAll(backgroundIV,scorefield,score,gameRoot);
+        appRoot.getChildren().addAll(backgroundIV,scorefield,score,lifefield,lives,gameRoot);
         return appRoot;
     }
 
@@ -89,9 +99,15 @@ public class Game {
     }
 
     private void goToNewLevel() {
-        levelNumber++;
-        scrollBackgroundIV();
-        Create_blocks(Level_data.levels[levelNumber]);
+        if(levelNumber<colvoOfLevels) {
+            levelNumber++;
+            scrollBackgroundIV();
+            Create_blocks(Level_data.levels[levelNumber]);
+        }
+        else {
+            levelNumber = 0;
+            Main.SetWindow_Scene(Main.Menu_screen);
+        }
 
     }
    private boolean isIntersectingPaddleBall(Paddle pl, Ball bk) {
@@ -213,8 +229,12 @@ public class Game {
 
     private void update(){
 	    int i=0;
-        if (lives == 0) {
-            timer.stop();
+        if (Life == 0) {
+            //timer.stop();
+            restart();
+            keys.clear();
+            running=false;
+            Main.SetWindow_Scene(Main.Menu_screen);
         }
 	    if(blocks.size()==0)
         {
@@ -233,27 +253,32 @@ public class Game {
             {
                 //buffer.setVisible(false);
                 //blocks.remove(buffer);
+                buffer.bonus.parallelTransition.play();
                 blocks.remove(buffer);
-                buffer.bonus.translateTransition.play();
                 int your_score=Integer.parseInt(score.getText());
                 score.setText(Integer.toString(your_score+1));
             }
             else
                 i++;
         }
-
-	    ball.update(player);
+	    if(ball.update(player))
+            decLife();
         if(isIntersectingPaddleBall(player,ball))
         {
             ball.velocityY=-ball.velocityY;
-            if((player.isMoveLeft() && ball.isMoveRight() )|| (player.isMoveRight() && ball.isMoveLeft()))
-                ball.velocityX =ball.velocityX==MIN_SPEED_OF_BALL?ball.velocityX:ball.velocityX-0.2 ;
-            if((player.isMoveLeft() && ball.isMoveLeft() )|| (player.isMoveRight() && ball.isMoveRight()))
-                ball.velocityX =ball.velocityX==MAX_SPEED_OF_BALL?ball.velocityX:ball.velocityX+0.2 ;
+            if(player.isMoveLeft() && ball.isMoveRight() )
+                ball.velocityX =ball.velocityX<=MIN_SPEED_OF_BALL?MIN_SPEED_OF_BALL:ball.velocityX-0.2 ;
+            if(player.isMoveRight() && ball.isMoveLeft())
+                ball.velocityX =ball.velocityX<=-MIN_SPEED_OF_BALL?MIN_SPEED_OF_BALL:ball.velocityX-0.2 ;
+            if(player.isMoveLeft() && ball.isMoveLeft() )
+                ball.velocityX =ball.velocityX>=MAX_SPEED_OF_BALL?MAX_SPEED_OF_BALL:ball.velocityX+0.2 ;
+             if (player.isMoveRight() && ball.isMoveRight())
+                ball.velocityX =ball.velocityX>=-MAX_SPEED_OF_BALL?MAX_SPEED_OF_BALL:ball.velocityX+0.2 ;
         }
 
         if (isPressed(KeyCode.ESCAPE)) {
             keys.clear();
+            timer.stop(); //working!
             Main.SetWindow_Scene(Main.Menu_screen);
 
         }
@@ -274,8 +299,19 @@ public class Game {
 
     }
 
-
-
+    private void restart(){
+        //gameRoot.getChildren().remove(player);
+        //gameRoot.getChildren().remove(ball);
+	   /* Group remoweRoot=new Group();
+	    scene.setRoot(remoweRoot);
+        root.getChildren().remove(appRoot);
+	    appRoot.getChildren().removeAll(backgroundIV,scorefield,score,lifefield,lives,gameRoot);
+	    //appRoot=new Pane();
+	    //gameRoot=new Pane();
+	    gameRoot.getChildren().remove(player);
+	    Main.Game_screen=set_scene();*/
+	    //blocks.clear();
+    }
 
     private boolean isPressed(KeyCode key){
         return keys.getOrDefault(key,false);
@@ -287,20 +323,35 @@ public class Game {
      */
     public  Scene  set_scene() {
         initContent();
-        scene = new Scene(appRoot,800,600);
-        scene.setOnKeyPressed(event-> keys.put(event.getCode(), true));
+        root.getChildren().add(appRoot);
+        //if(scene==null) {
+        scene = new Scene(root, 800, 600);
+        scene.setOnKeyPressed(event -> keys.put(event.getCode(), true));
         scene.setOnKeyReleased(event -> {
-            keys.put(event.getCode(), false);
-            //player.stopMove();
-        });
+                keys.put(event.getCode(), false);
+                //player.stopMove();
+            });
+       // }
         return scene;
+    }
+
+    private void decLife()
+    {
+        Life--;
+        ball.goToStartPosition();
+        player.goToStartPosition();
+        lives.setText(Integer.toString(Life));
     }
     /**Game processing
      *
      */
     public void Game_Processing()
     {
-
+        /*if(running==false) {
+            initContent();
+            root.getChildren().add(appRoot);
+        }*/
+        running=true;
         System.out.println(running);
         timer = new AnimationTimer() {
         @Override
@@ -317,5 +368,71 @@ public class Game {
         timer.start();
     }
 
+    public void AutoPlay() {
+        player.setVelocity(Ball.BALL_VELOCITY);
+        timer = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                try {
+                    Thread.sleep(10);
+                    computerPlay();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        };
+        timer.start();
+    }
+
+    private void computerPlay() {
+        int i=0;
+        if(blocks.size()==0)
+        {
+            goToNewLevel();
+        }
+        while(i<blocks.size())
+        {
+            Block buffer=blocks.get(i);
+            if(buffer.isDestroyed())
+            {
+                //buffer.setVisible(false);
+                //blocks.remove(buffer);
+                buffer.bonus.parallelTransition.play();
+                blocks.remove(buffer);
+                int your_score=Integer.parseInt(score.getText());
+                score.setText(Integer.toString(your_score+1));
+            }
+            else
+                i++;
+        }
+        if(ball.update(player))
+            decLife();
+        if(isIntersectingPaddleBall(player,ball))
+        {
+            ball.velocityY=-ball.velocityY;
+            if(player.isMoveLeft() && ball.isMoveRight() )
+                ball.velocityX =ball.velocityX<=MIN_SPEED_OF_BALL?MIN_SPEED_OF_BALL:ball.velocityX-0.2 ;
+            if(player.isMoveRight() && ball.isMoveLeft())
+                ball.velocityX =ball.velocityX<=-MIN_SPEED_OF_BALL?MIN_SPEED_OF_BALL:ball.velocityX-0.2 ;
+            if(player.isMoveLeft() && ball.isMoveLeft() )
+                ball.velocityX =ball.velocityX>=MAX_SPEED_OF_BALL?MAX_SPEED_OF_BALL:ball.velocityX+0.2 ;
+            if (player.isMoveRight() && ball.isMoveRight())
+                ball.velocityX =ball.velocityX>=-MAX_SPEED_OF_BALL?MAX_SPEED_OF_BALL:ball.velocityX+0.2 ;
+        }
+        if(ball.isMoving())
+            player.setVelocity(Math.abs(ball.velocityX)-0.1);
+            if (ball.isMoveLeft()) {
+                player.moveLeft();
+                player.update();
+            } else if(ball.isMoveRight()){
+                player.moveRight();
+                player.update();
+            }
+            else {
+                player.moveRight();
+                player.update();
+            }
+    }
 }
 

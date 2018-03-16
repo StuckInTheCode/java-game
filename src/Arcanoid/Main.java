@@ -44,6 +44,7 @@ public class Main extends Application {
 
     private static int currentItem = 0;
 
+    private boolean autoPlay=false;
     /**Setting the required scene
      * @param scene
      */
@@ -62,44 +63,89 @@ public class Main extends Application {
         ImageView backgroundIV = new ImageView(backgroundImg);
         backgroundIV.autosize();
         backgroundIV.setLayoutY(0);
+        MenuItem level1 = new MenuItem("Level 1");
+        level1.setCanChoose(true);
+        level1.setOnActivate(() -> {
+            Game.levelNumber =0;
+            System.out.println(Game.levelNumber);
+
+        });
+        MenuItem level2 = new MenuItem("Level 2");
+        level2.setCanChoose(true);
+        level2.setOnActivate(() -> {
+            Game.levelNumber =1;
+
+        });
+        MenuItem level3 = new MenuItem("Level 3");
+        level3.setCanChoose(true);
+        level3.setOnActivate(() -> {
+            Game.levelNumber =2;
+
+        });
+        MenuItem levelsBack = new MenuItem("RETURN");
+        SubMenu levelsMenu = new SubMenu(level1,level2,level3,levelsBack);
+
 
         MenuItem itemExit = new MenuItem("EXIT");
         itemExit.setOnActivate(() -> System.exit(0));
         
         MenuItem options = new MenuItem("OPTIONS");
+        MenuItem chooseLevel = new MenuItem("CHOOSE LEVEL");
+        chooseLevel.setOnActivate(() -> {
+            menuBox.setSubMenu(levelsMenu);
+        });
 
         MenuItem itemPlay = new MenuItem("PLAY");
         itemPlay.setOnActivate(() -> {
 			try {
 				//window.setTitle("Star Arcanoid");
-				window.setScene(Game_screen);
+				//window.setScene(Game_screen);
+				if(!Game.isRunning()) {
+                    //MyGame = new Game();
+                    Game_screen=MyGame.set_scene();
+                }
+                window.setScene(Game_screen);
+				if(!autoPlay)
 				MyGame.Game_Processing();
-			     /*   AnimationTimer timer = new AnimationTimer() {
-			            @Override
-			            public void handle(long now) {
-			              //  update();
-			            }
-			        };
-			        timer.start();*/
+				else
+                    MyGame.AutoPlay();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		});
         
-        SubMenu MainMenu = new SubMenu(	itemPlay,options,itemExit);
-        MenuItem sound = new MenuItem("SOUND");
-        MenuItem video = new MenuItem("VIDEO");
-        MenuItem keys = new MenuItem("KEYS");
+        SubMenu MainMenu = new SubMenu(	itemPlay,chooseLevel,options,itemExit);
+        //MenuItem sound = new MenuItem("SOUND");
+        //MenuItem video = new MenuItem("VIDEO");
+        //MenuItem keys = new MenuItem("KEYS");
+        MenuItem onePlayer = new MenuItem("SOLO GAME");
+        MenuItem computerPlays = new MenuItem("COMPUTER PLAYS");
         MenuItem optionsBack = new MenuItem("RETURN");
         SubMenu optionsMenu = new SubMenu(
-                sound,video,keys,optionsBack
+                onePlayer,computerPlays,optionsBack
+                //sound,video,keys,optionsBack
         );
         options.setOnActivate(() -> {
             backgroundIV.setLayoutY(-600);
             menuBox.setSubMenu(optionsMenu);
         });
+        onePlayer.setCanChoose(true);
+        onePlayer.setOnActivate(() -> {
+            autoPlay=false;
+
+        });
+        computerPlays.setCanChoose(true);
+        computerPlays.setOnActivate(() -> {
+            autoPlay=true;
+
+        });
         optionsBack.setOnActivate(() -> {
+            backgroundIV.setLayoutY(0);
+            menuBox.setSubMenu(MainMenu);
+
+        });
+        levelsBack.setOnActivate(() -> {
             backgroundIV.setLayoutY(0);
             menuBox.setSubMenu(MainMenu);
 
@@ -192,9 +238,10 @@ public class Main extends Application {
     private class MenuItem extends HBox {
         private Text text;          //текст
         private Runnable script;    //исполняемый код
-        
+        private boolean canChoose;
         public MenuItem(String name) {
             super(15);
+            canChoose=false;
             setAlignment(Pos.CENTER);
             text = new Text(name);
             text.setFont(FONT);
@@ -212,6 +259,14 @@ public class Main extends Application {
             text.setFill(b ? Color.AQUA : Color.GREY);
         }
 
+        public void setChoosed(boolean b) {
+            text.setFill(b ? Color.GOLD : Color.GREY);
+        }
+
+        public boolean isCanChoose(){return canChoose;}
+        public void setCanChoose(boolean b) {
+            canChoose=b;
+        }
         /**Sets the executable code for a menu item
          *
          * @param r
@@ -250,8 +305,6 @@ public class Main extends Application {
     	window=primaryStage;
     	window.setResizable(false);
     	window.sizeToScene();
-
-        Game_screen=MyGame.set_scene();
         Menu_screen = new Scene(createContent());
         Menu_screen.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.UP) {
@@ -269,6 +322,11 @@ public class Main extends Application {
             }
 
             if (event.getCode() == KeyCode.ENTER) {
+                if(menuBox.getMenuItem(currentItem).isCanChoose()) {
+                    for (int i=0;i<MenuBox.subMenu.getChildren().size() - 1;i++)
+                    menuBox.getMenuItem(i).setChoosed(false);
+                    menuBox.getMenuItem(currentItem).setChoosed(true);
+                }
             	menuBox.getMenuItem(currentItem).activate();
             }
         });
