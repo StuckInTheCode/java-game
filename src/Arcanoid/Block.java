@@ -1,10 +1,7 @@
 package Arcanoid;
 
-import javafx.animation.TranslateTransition;
-import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.util.Duration;
 
 /**
  * Class Block
@@ -13,10 +10,6 @@ import javafx.util.Duration;
 public class Block extends Rectangle{
 	boolean destroyed = false;
     public final Bonus bonus;
-    Point2D topleft;
-    Point2D topright;
-    Point2D bottomleft;
-    Point2D bottomright;
     int breakable=0;
     public enum BlockType {
         BUBBLE, CRYSTALL, BONUS, BRICK, STONE, DIAMAND, UNBREAKABLE_BLOCK
@@ -27,15 +20,12 @@ public class Block extends Rectangle{
 		this.setY(y);
 		this.setHeight(30);
 		this.setWidth(30);
-        this.topleft=new Point2D(x,y);
-        this.bottomleft=new Point2D(x,y+30);
-        this.topright=new Point2D(x+30,y);
-        this.bottomright=new Point2D(x+30,y+30);
 		this.setFill(Color.BLUE);
         this.bonus = new Bonus(Bonus.BONUS_TYPE.FROZEN, y);
         Game.gameRoot.getChildren().add(this);
 	}
-    public static Block  createBlock(double x, double y,BlockType type)
+
+    static Block createBlock(double x, double y, BlockType type)
     {
         Block block = new Block(x, y);
 
@@ -90,11 +80,11 @@ public class Block extends Rectangle{
 	{
 		return this.destroyed;
 	}
-	void Delete()
+	/* Delete()
 	{
 		Game.gameRoot.getChildren().remove(this);
 		this.setVisible(false);
-	}
+	}*/
 
 
 }

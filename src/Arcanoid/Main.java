@@ -20,7 +20,7 @@ import javafx.stage.Stage;
 
 /** Class generate a main menu and submenus of the game
  * @author Kovbasa G.A.
- * @version 0.2
+ * @version 0.3
  */
 public class Main extends Application {
 
@@ -33,7 +33,7 @@ public class Main extends Application {
     /**Variable of the main window*/
     private static Stage window;
 
-    public static Scene Game_screen, Menu_screen;
+    static Scene Game_screen, Menu_screen;
 
     /**The object of the game to launch*/
     private static Game MyGame= new Game();
@@ -47,6 +47,7 @@ public class Main extends Application {
     /**Setting the required scene
      * @param scene
      */
+    @SuppressWarnings("JavaDoc")
     public static void SetWindow_Scene(Scene scene) {
     	 window.setScene(scene);
     }
@@ -93,10 +94,9 @@ public class Main extends Application {
         itemExit.setOnActivate(() -> System.exit(0));
         
         MenuItem options = new MenuItem("OPTIONS");
+
         MenuItem chooseLevel = new MenuItem("CHOOSE LEVEL");
-        chooseLevel.setOnActivate(() -> {
-            menuBox.setSubMenu(levelsMenu);
-        });
+        chooseLevel.setOnActivate(() -> menuBox.setSubMenu(levelsMenu));
 
         MenuItem itemPlay = new MenuItem("PLAY");
         itemPlay.setOnActivate(() -> {
@@ -104,7 +104,7 @@ public class Main extends Application {
 				//window.setTitle("Star Arcanoid");
 				//window.setScene(Game_screen);
 				//if(!Game.isRunning()) {
-                    //MyGame = new Game();
+                //    MyGame = new Game();
                 //    Game_screen=MyGame.set_scene();
                 //}
                 window.setScene(Game_screen);
@@ -134,15 +134,9 @@ public class Main extends Application {
             menuBox.setSubMenu(optionsMenu);
         });
         onePlayer.setCanChoose(true);
-        onePlayer.setOnActivate(() -> {
-            autoPlay=false;
-
-        });
+        onePlayer.setOnActivate(() -> autoPlay = false);
         computerPlays.setCanChoose(true);
-        computerPlays.setOnActivate(() -> {
-            autoPlay=true;
-
-        });
+        computerPlays.setOnActivate(() -> autoPlay = true);
         optionsBack.setOnActivate(() -> {
             backgroundIV.setLayoutY(0);
             menuBox.setSubMenu(MainMenu);
@@ -154,7 +148,6 @@ public class Main extends Application {
 
         });
         menuBox = new MenuBox(MainMenu);
-       // menuBox.setAlignment(Pos.TOP_CENTER);
         menuBox.setTranslateX(0);
         menuBox.setTranslateY(300);
         
@@ -192,48 +185,41 @@ public class Main extends Application {
        return menuRoot;
     }
 
-  /*  private Object go_to_Game() {
-		// TODO Auto-generated method stub
-		return null;
-	}*/
-
     /**Container class for menu items*/
     private static class MenuBox extends StackPane{
         static SubMenu subMenu;
-        public MenuBox(SubMenu subMenu){
+
+        MenuBox(SubMenu subMenu) {
             MenuBox.subMenu = subMenu;
             setVisible(true);
             //setVisible(false);
-           //Rectangle under_layout = new Rectangle(600,300,Color.LIGHTBLUE);
-           // under_layout.setOpacity(0.4);
+            //Rectangle under_layout = new Rectangle(600,300,Color.LIGHTBLUE);
+            // under_layout.setOpacity(0.4);
             getChildren().addAll(subMenu);
         }
-        public void setSubMenu(SubMenu subMenu){
+
+        void setSubMenu(SubMenu subMenu) {
 
             getMenuItem(currentItem).setActive(false);
-            /*FadeTransition ft = new FadeTransition(Duration.seconds(1),menuBox);
-            if (!menuBox.isVisible()) {
-                ft.setFromValue(0);
-                ft.setToValue(1);
-                ft.play();
-                menuBox.setVisible(true);
-            }
-            else{
-                ft.setFromValue(1);
-                ft.setToValue(0);
-                ft.setOnFinished(evt ->   menuBox.setVisible(false));
-                ft.play();
-
-            }*/
             getChildren().remove(MenuBox.subMenu);
             MenuBox.subMenu = subMenu;
             currentItem=0;
             getMenuItem(0).setActive(true);
-            //.getMenuItem(0).setActive(true);
             getChildren().add(MenuBox.subMenu);
         }
         private MenuItem getMenuItem(int index) {
             return (MenuItem)subMenu.getChildren().get(index);
+        }
+    }
+
+    private static class SubMenu extends VBox {
+        SubMenu(MenuItem... items) {
+            //setSpacing(15);
+            setTranslateY(50);
+            setTranslateX(350);
+            for (MenuItem item : items) {
+                getChildren().addAll(item);
+            }
         }
     }
 
@@ -242,7 +228,8 @@ public class Main extends Application {
         private Text text;          //текст
         private Runnable script;    //исполняемый код
         private boolean canChoose;
-        public MenuItem(String name) {
+
+        MenuItem(String name) {
             super(15);
             canChoose=false;
             setAlignment(Pos.CENTER);
@@ -251,7 +238,6 @@ public class Main extends Application {
             text.setEffect(new GaussianBlur(1));
             getChildren().addAll(text);
             setActive(false);
-            //setOnActivate(() -> System.out.println(name + " activated"));
         }
 
         /**Sets the highlight of the selected menu item
@@ -262,46 +248,36 @@ public class Main extends Application {
             text.setFill(b ? Color.AQUA : Color.GREY);
         }
 
-        public void setChoosed(boolean b) {
+        void setChoosed(boolean b) {
             text.setFill(b ? Color.GOLD : Color.GREY);
         }
 
-        public boolean isCanChoose(){return canChoose;}
-        public void setCanChoose(boolean b) {
+        boolean isCanChoose() {
+            return canChoose;
+        }
+
+        void setCanChoose(boolean b) {
             canChoose=b;
         }
         /**Sets the executable code for a menu item
          *
          * @param r
          */
-        public void setOnActivate(Runnable r) {
+        void setOnActivate(Runnable r) {
             script = r;
         }
 
         /**
          * Run the executable code
          */
-        public void activate() {
+        void activate() {
             if (script != null)
                 script.run();
         }
     }
 
-    private static class SubMenu extends VBox
-    {
-        public SubMenu(MenuItem...items){
-            //setSpacing(15);
-            setTranslateY(50);
-            setTranslateX(350);
-            for(MenuItem item : items){
-                getChildren().addAll(item);
-            }
-        }
-    }
-
     /**Start method
      * @param primaryStage
-     * @throws Exception
      */
     @Override
     public void start(Stage primaryStage) {

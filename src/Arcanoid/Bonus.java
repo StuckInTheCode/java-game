@@ -3,8 +3,6 @@ package Arcanoid;
 import javafx.animation.ParallelTransition;
 import javafx.animation.Timeline;
 import javafx.animation.TranslateTransition;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
@@ -15,15 +13,15 @@ import javafx.util.Duration;
 public class Bonus extends Pane{
     enum BONUS_TYPE{FROZEN,LIFE,SPEED,LONG_PADDLE}
 
-    static Image bonus=new Image("bonus.png");
-    static ImageView bonusIV= new ImageView(bonus);
-    BONUS_TYPE type;
-    int width = 30;
-    int height = 30;
-    boolean isCatched=false;
-    TranslateTransition translateTransition;
+    private static Image bonus = new Image("bonus.png");
+    private static ImageView bonusIV = new ImageView(bonus);
+    private BONUS_TYPE type;
+    private int width = 30;
+    private int height = 30;
+    private boolean isCatched = false;
+    private TranslateTransition translateTransition;
     ParallelTransition parallelTransition;
-    public FramesAnimation animation;
+    private FramesAnimation animation;
     public Point2D playerVelocity = new Point2D(0,0);
     Bonus(BONUS_TYPE mType,double y)
     {
@@ -42,8 +40,6 @@ public class Bonus extends Pane{
                 bonusIV.setViewport(new Rectangle2D(0,0,width,height));
                 animation = new FramesAnimation(bonusIV, Duration.millis(200),2,1,0,0,width,height);
                 getChildren().addAll(bonusIV);
-                //bonusIV.setX(0);
-                //bonusIV.setY(0);
                 break;
             }
             case LIFE:
@@ -65,16 +61,12 @@ public class Bonus extends Pane{
                 animation
         );
         parallelTransition.setCycleCount(Timeline.INDEFINITE);
-        bonusIV.translateYProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                if(testPaddleCollision()) {
-                    parallelTransition.stop();
-                    isCatched=true;
-                }
+        bonusIV.translateYProperty().addListener((observable, oldValue, newValue) -> {
+            if (testPaddleCollision()) {
+                parallelTransition.stop();
+                isCatched = true;
             }
         });
-
         //parallelTransition.play();
     }
 
@@ -97,12 +89,5 @@ public class Bonus extends Pane{
 
         }*/
     }
-    /*void changeKeyFrame()
-    {
-        if(this.bonusIV.getLayoutX()==0)
-            this.bonusIV.setLayoutX(30);
-        else
-            this.bonusIV.setLayoutX(0);
-    }*/
 
 }

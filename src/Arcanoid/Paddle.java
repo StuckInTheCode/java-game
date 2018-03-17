@@ -3,9 +3,6 @@ package Arcanoid;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
-//import java.awt.Color;
-//import java.awt.Graphics;
-
 /**
  * Class Paddle
  * @version 0.0 - Inherited from Rectangle
@@ -16,14 +13,24 @@ public class Paddle extends Rectangle {
 	private static double VELOCITY = 1.0;
 	private double velocity = 0.0;
 
-	public Paddle(double x, double y) {
+	Paddle(double x, double y) {
 		this.setX(x);
 		this.setY(y);
 		this.setHeight(20);
 		this.setWidth(80);
 		this.setFill(Color.YELLOW);
+		/*this.translateXProperty().addListener(new ChangeListener<Number>() {
+			@Override
+			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+				if (testBallNPaddleCollision())
+					changeDirectionX();
+			}
+
+
+		});*/
 
 	}
+
 	void update() {
 		this.setTranslateX(this.getTranslateX()+ velocity * 5 );
 	}

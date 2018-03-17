@@ -20,8 +20,8 @@ import static Arcanoid.Block.createBlock;
  */
 public class Game {
     private static final double BALL_VELOCITY = 1;
-    private static final double MAX_SPEED_OF_BALL = 1.4;
-    private static final double MIN_SPEED_OF_BALL = 0.6;
+    //private static final double MAX_SPEED_OF_BALL = 1.4;
+    //private static final double MIN_SPEED_OF_BALL = 0.6;
     /**
      * Container for storing elements (blocks) for the current level
      */
@@ -29,28 +29,32 @@ public class Game {
     private HashMap<KeyCode, Boolean> keys = new HashMap<>();
     private static boolean running = false;
     private static Image backgroundImg = new Image("java.png");
-    ImageView backgroundIV;
+    public static Ball ball;
     private static final int BLOCK_SIZE = 31;
     /**
      * Containers of elements of the main node and game content
      */
     private Pane appRoot = new Pane();
     public static Pane gameRoot = new Pane();
-    private Group root = new Group();
-    /**
-     * Game scene
-     */
+    private ImageView backgroundIV;
+
     private Text scorefield;
     private Text lifefield;
     private Text lives;
-    public int Life;
+    /**
+     * Main group of the scene
+     */
+    private Group root = new Group();
     private Text score;
-    private Scene scene = null;
+    private int Life;
     private AnimationTimer timer;
     public static Paddle player;
     public static int levelNumber = 0;
     private final int colvoOfLevels = 2;
-    private Ball ball;
+    /**
+     * Game scene
+     */
+    private Scene scene = null;
 
     /**
      * Initialization content on the scene
@@ -118,18 +122,33 @@ public class Game {
 
     }
 
-    private boolean isIntersectingPaddleBall(Paddle pl, Ball bk) {
+    /*private boolean isIntersectingPaddleBall(Paddle pl, Ball bk) {
         if (bk.getCenterY() + bk.getTranslateY() >= pl.getY() && bk.getCenterY() + bk.getTranslateY() < pl.getY() + pl.getHeight())
-            return bk.getCenterX() + bk.getTranslateX() <= pl.getX() + pl.getTranslateX() + pl.getWidth() &&
-                    bk.getCenterX() + bk.getTranslateX() >= pl.getX() + pl.getTranslateX();
-        //if(bk.getCenterY()+bk.getTranslateY()>=pl.getY()&& bk.getCenterY()+bk.getTranslateY()<pl.getY()+pl.getHeight() &&
-        //        pl.getBoundsInParent().intersects(bk.getBoundsInParent()))
+        return bk.getCenterX() + bk.getTranslateX() <= pl.getX() + pl.getTranslateX() + pl.getWidth() &&
+        bk.getCenterX() + bk.getTranslateX() >= pl.getX() + pl.getTranslateX();
+       // if(bk.getCenterY()+bk.getTranslateY()>=pl.getY()&& bk.getCenterY()+bk.getTranslateY()<pl.getY()+pl.getHeight() &&
+         //if(pl.getBoundsInParent().intersects(bk.getBoundsInParent()) && bk.getCenterX() + bk.getTranslateX() <= pl.getX() + pl.getTranslateX() + pl.getWidth() &&
+         //        bk.getCenterX() + bk.getTranslateX() >= pl.getX() + pl.getTranslateX())
         //   return true ;
         return false;
-    }
+    }*/
+    /*void testCollision(Block mBlock, Ball mBall) {
+        //if (!isIntersectingBlockBall(mBlock, mBall))
+        if (!mBlock.getBoundsInParent().intersects(mBall.getBoundsInParent()))
+            return;
 
-    private boolean isIntersectingBlockBall(Block bl, Ball bk) {
-        double overlapXLeft;//Math.abs(bk.getCenterX()+bk.getTranslateX()- bl.getX());
+        mBlock.destroyed = true;
+
+        mBall.velocityX = -mBall.velocityX;
+        mBall.velocityY = -mBall.velocityY;
+    }*/
+    /*boolean testBallNPaddleCollision() {
+        if (ball.getBoundsInParent().intersects(player.getBoundsInParent()) && ball.getCenterY() + ball.getTranslateY() == player.getY())
+            return true;
+        return false;
+    }*/
+    /*private boolean isIntersectingBlockBall(Block bl, Ball bk) {
+       double overlapXLeft;//Math.abs(bk.getCenterX()+bk.getTranslateX()- bl.getX());
         double overlapXRight;//=Math.abs(bk.getCenterX()+bk.getTranslateX()- bl.getX()-bl.getWidth());
         double overlapYTop;//=Math.abs(bk.getCenterY()+bk.getTranslateY()-bl.getY());
         double overlapYBottom;//=Math.abs(bk.getCenterY()+bk.getTranslateY()-bl.getY()-bl.getHeight());
@@ -142,10 +161,10 @@ public class Game {
         double overlapx;
         double overlapy;
         double minimalIntersection = bk.getRadius();
-       /* if((overlapXLeft<=minimalIntersection||overlapXRight<=minimalIntersection) &&
-                (overlapYTop<=minimalIntersection || overlapYBottom<=minimalIntersection)){ //if(overlapYTop<=minimalIntersection || overlapYBottom<=minimalIntersection)
-            return true;
-        }*/
+        // if((overlapXLeft<=minimalIntersection||overlapXRight<=minimalIntersection) &&
+        //        (overlapYTop<=minimalIntersection || overlapYBottom<=minimalIntersection)){ //if(overlapYTop<=minimalIntersection || overlapYBottom<=minimalIntersection)
+        //    return true;
+        //}
 
         //overlapx = ball_from_left?overlapXLeft:overlapXRight;
         //overlapy = ball_from_top?overlapYTop:overlapYBottom;
@@ -177,21 +196,10 @@ public class Game {
                 return overlapx <= minimalIntersection || overlapy <= minimalIntersection;
             }
         }
-    }
+    }*/
 
     public static boolean isRunning() {
         return running;
-    }
-
-    void testCollision(Block mBlock, Ball mBall) {
-        //if (!isIntersectingBlockBall(mBlock, mBall))
-        if (!mBlock.getBoundsInParent().intersects(mBall.getBoundsInParent()))
-            return;
-
-        mBlock.destroyed = true;
-
-        mBall.velocityX = -mBall.velocityX;
-        mBall.velocityY = -mBall.velocityY;
     }
 
     /**
@@ -235,8 +243,10 @@ public class Game {
 
     }
 
-    private void gamePlaying()
-    {
+    /**
+     * Main process, that checks updates and call the redrawing methods
+     */
+    private void gamePlaying() {
         int i = 0;
         if (Life == 0) {
             timer.stop();
@@ -245,18 +255,17 @@ public class Game {
             running = false;
             Main.SetWindow_Scene(Main.Menu_screen);
         }
-        if (blocks.size() == 0) {
+        if (blocks.size() == 0) {           //checking wining
             goToNewLevel();
         }
         while (i < blocks.size()) {
             Block buffer = blocks.get(i);
-            //testCollision(buffer, ball);
             /*if(buffer.bonus.isCatched)
             {
-                //buffer.bonus.useBonus(player,ball);
+                buffer.bonus.useBonus(player,ball);
                 buffer.bonus.setVisible(false);
             }*/
-            if (buffer.isDestroyed()) {
+            if (buffer.isDestroyed()) {     //checking blocks sre destroyed
                 //buffer.setVisible(false);
                 //blocks.remove(buffer);
                 buffer.bonus.parallelTransition.play();
@@ -266,21 +275,17 @@ public class Game {
             } else
                 i++;
         }
-        if (ball.update(player))
+        if (ball.update(player))             //main redraw the ball
             decLife();
-        if (isIntersectingPaddleBall(player, ball)) {
-            ball.velocityY = -ball.velocityY;
-            if (player.isMoveLeft() && ball.isMoveRight())
-                ball.velocityX = ball.velocityX <= MIN_SPEED_OF_BALL ? MIN_SPEED_OF_BALL : ball.velocityX - 0.2;
-            if (player.isMoveRight() && ball.isMoveLeft())
-                ball.velocityX = ball.velocityX <= -MIN_SPEED_OF_BALL ? MIN_SPEED_OF_BALL : ball.velocityX - 0.2;
-            if (player.isMoveLeft() && ball.isMoveLeft())
-                ball.velocityX = ball.velocityX >= MAX_SPEED_OF_BALL ? MAX_SPEED_OF_BALL : ball.velocityX + 0.2;
-            if (player.isMoveRight() && ball.isMoveRight())
-                ball.velocityX = ball.velocityX >= -MAX_SPEED_OF_BALL ? MAX_SPEED_OF_BALL : ball.velocityX + 0.2;
+        if (ball.testBallNPaddleCollision()) {//special redraw the ball
+            ball.intersectWithPaddle();
         }
 
     }
+
+    /**
+     * Method interaction with gamer
+     */
     private void update() {
         /*int i = 0;
         if (Life == 0) {
@@ -345,15 +350,18 @@ public class Game {
 
     }
 
+    /**
+     * Restarting the game
+     */
     public void restart() {
         //gameRoot.getChildren().remove(player);
         //gameRoot.getChildren().remove(ball);
         ball.goToStartPosition();
         player.goToStartPosition();
         score.setText("0");
-        lives.setText("3");
-        Life=5;
-        int i=0;
+        lives.setText("5");
+        Life = 5;
+        int i = 0;
         while (i < blocks.size()) {
             Block buffer = blocks.get(i);
             buffer.setVisible(false);
@@ -364,7 +372,7 @@ public class Game {
         blocks.clear();
         Create_blocks(Level_data.levels[levelNumber]);
         scrollBackgroundIV();
-	   /* Group remoweRoot=new Group();
+         /* Group remoweRoot=new Group();
 	    scene.setRoot(remoweRoot);
         root.getChildren().remove(appRoot);
 	    appRoot.getChildren().removeAll(backgroundIV,scorefield,score,lifefield,lives,gameRoot);
@@ -383,22 +391,22 @@ public class Game {
      * Set content on the scene
      *
      * @return Scene
-     * @throws Exception
      */
     public Scene set_scene() {
         initContent();
         root.getChildren().add(appRoot);
-        //if(scene==null) {
         scene = new Scene(root, 800, 600);
         scene.setOnKeyPressed(event -> keys.put(event.getCode(), true));
         scene.setOnKeyReleased(event -> {
             keys.put(event.getCode(), false);
             //player.stopMove();
         });
-        // }
         return scene;
     }
 
+    /**
+     * Decrease the life
+     */
     private void decLife() {
         Life--;
         ball.goToStartPosition();
@@ -448,34 +456,10 @@ public class Game {
         timer.start();
     }
 
+    /**
+     * Bot plays
+     */
     private void computerPlay() {
-        /*int i = 0;
-        if (blocks.size() == 0) {
-            goToNewLevel();
-        }
-        while (i < blocks.size()) {
-            Block buffer = blocks.get(i);
-            if (buffer.isDestroyed()) {
-                buffer.bonus.parallelTransition.play();
-                blocks.remove(buffer);
-                int your_score = Integer.parseInt(score.getText());
-                score.setText(Integer.toString(your_score + 1));
-            } else
-                i++;
-        }
-        if (ball.update(player))
-            decLife();
-        if (isIntersectingPaddleBall(player, ball)) {
-            ball.velocityY = -ball.velocityY;
-            if (player.isMoveLeft() && ball.isMoveRight())
-                ball.velocityX = ball.velocityX <= MIN_SPEED_OF_BALL ? MIN_SPEED_OF_BALL : ball.velocityX - 0.2;
-            if (player.isMoveRight() && ball.isMoveLeft())
-                ball.velocityX = ball.velocityX <= -MIN_SPEED_OF_BALL ? MIN_SPEED_OF_BALL : ball.velocityX - 0.2;
-            if (player.isMoveLeft() && ball.isMoveLeft())
-                ball.velocityX = ball.velocityX >= MAX_SPEED_OF_BALL ? MAX_SPEED_OF_BALL : ball.velocityX + 0.2;
-            if (player.isMoveRight() && ball.isMoveRight())
-                ball.velocityX = ball.velocityX >= -MAX_SPEED_OF_BALL ? MAX_SPEED_OF_BALL : ball.velocityX + 0.2;
-        }*/
         gamePlaying();
         if (isPressed(KeyCode.ESCAPE)) {
             keys.clear();
