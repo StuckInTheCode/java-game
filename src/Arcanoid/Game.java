@@ -20,8 +20,6 @@ import static Arcanoid.Block.createBlock;
  */
 public class Game {
     private static final double BALL_VELOCITY = 1;
-    //private static final double MAX_SPEED_OF_BALL = 1.4;
-    //private static final double MIN_SPEED_OF_BALL = 0.6;
     /**
      * Container for storing elements (blocks) for the current level
      */
@@ -122,82 +120,6 @@ public class Game {
 
     }
 
-    /*private boolean isIntersectingPaddleBall(Paddle pl, Ball bk) {
-        if (bk.getCenterY() + bk.getTranslateY() >= pl.getY() && bk.getCenterY() + bk.getTranslateY() < pl.getY() + pl.getHeight())
-        return bk.getCenterX() + bk.getTranslateX() <= pl.getX() + pl.getTranslateX() + pl.getWidth() &&
-        bk.getCenterX() + bk.getTranslateX() >= pl.getX() + pl.getTranslateX();
-       // if(bk.getCenterY()+bk.getTranslateY()>=pl.getY()&& bk.getCenterY()+bk.getTranslateY()<pl.getY()+pl.getHeight() &&
-         //if(pl.getBoundsInParent().intersects(bk.getBoundsInParent()) && bk.getCenterX() + bk.getTranslateX() <= pl.getX() + pl.getTranslateX() + pl.getWidth() &&
-         //        bk.getCenterX() + bk.getTranslateX() >= pl.getX() + pl.getTranslateX())
-        //   return true ;
-        return false;
-    }*/
-    /*void testCollision(Block mBlock, Ball mBall) {
-        //if (!isIntersectingBlockBall(mBlock, mBall))
-        if (!mBlock.getBoundsInParent().intersects(mBall.getBoundsInParent()))
-            return;
-
-        mBlock.destroyed = true;
-
-        mBall.velocityX = -mBall.velocityX;
-        mBall.velocityY = -mBall.velocityY;
-    }*/
-    /*boolean testBallNPaddleCollision() {
-        if (ball.getBoundsInParent().intersects(player.getBoundsInParent()) && ball.getCenterY() + ball.getTranslateY() == player.getY())
-            return true;
-        return false;
-    }*/
-    /*private boolean isIntersectingBlockBall(Block bl, Ball bk) {
-       double overlapXLeft;//Math.abs(bk.getCenterX()+bk.getTranslateX()- bl.getX());
-        double overlapXRight;//=Math.abs(bk.getCenterX()+bk.getTranslateX()- bl.getX()-bl.getWidth());
-        double overlapYTop;//=Math.abs(bk.getCenterY()+bk.getTranslateY()-bl.getY());
-        double overlapYBottom;//=Math.abs(bk.getCenterY()+bk.getTranslateY()-bl.getY()-bl.getHeight());
-        overlapXLeft = bk.center.distance(bl.topleft);
-        overlapXRight = bk.center.distance(bl.bottomleft);
-        overlapYTop = bk.center.distance(bl.topright);
-        overlapYBottom = bk.center.distance(bl.bottomright);
-        boolean ball_from_left = overlapXLeft < overlapXRight;
-        boolean ball_from_top = overlapYTop < overlapYBottom;
-        double overlapx;
-        double overlapy;
-        double minimalIntersection = bk.getRadius();
-        // if((overlapXLeft<=minimalIntersection||overlapXRight<=minimalIntersection) &&
-        //        (overlapYTop<=minimalIntersection || overlapYBottom<=minimalIntersection)){ //if(overlapYTop<=minimalIntersection || overlapYBottom<=minimalIntersection)
-        //    return true;
-        //}
-
-        //overlapx = ball_from_left?overlapXLeft:overlapXRight;
-        //overlapy = ball_from_top?overlapYTop:overlapYBottom;
-        //if(overlapx==minimalIntersection || overlapy==minimalIntersection)
-        //   return true;
-        if (overlapXLeft == minimalIntersection || overlapXRight == minimalIntersection || overlapYTop == minimalIntersection || overlapYBottom == minimalIntersection)
-            return true;
-        if (bl.getBoundsInLocal().intersects((bk.getBoundsInLocal())))
-            return true;
-        //overlapx=bk.center.distance(bl.topleft);
-        if (ball_from_top) {
-            if (ball_from_left) {
-                overlapx = bk.right.distance(bl.topleft);
-                overlapy = bk.bottom.distance(bl.topleft);
-                return overlapx <= minimalIntersection || overlapy <= minimalIntersection;
-            } else {
-                overlapx = bk.left.distance(bl.topright);
-                overlapy = bk.bottom.distance(bl.topright);
-                return overlapx <= minimalIntersection || overlapy <= minimalIntersection;
-            }
-        } else {
-            if (ball_from_left) {
-                overlapx = bk.right.distance(bl.bottomleft);
-                overlapy = bk.top.distance(bl.bottomleft);
-                return overlapx <= minimalIntersection || overlapy <= minimalIntersection;
-            } else {
-                overlapx = bk.left.distance(bl.bottomright);
-                overlapy = bk.top.distance(bl.bottomright);
-                return overlapx <= minimalIntersection || overlapy <= minimalIntersection;
-            }
-        }
-    }*/
-
     public static boolean isRunning() {
         return running;
     }
@@ -260,14 +182,7 @@ public class Game {
         }
         while (i < blocks.size()) {
             Block buffer = blocks.get(i);
-            /*if(buffer.bonus.isCatched)
-            {
-                buffer.bonus.useBonus(player,ball);
-                buffer.bonus.setVisible(false);
-            }*/
             if (buffer.isDestroyed()) {     //checking blocks sre destroyed
-                //buffer.setVisible(false);
-                //blocks.remove(buffer);
                 buffer.bonus.parallelTransition.play();
                 blocks.remove(buffer);
                 int your_score = Integer.parseInt(score.getText());
@@ -287,48 +202,6 @@ public class Game {
      * Method interaction with gamer
      */
     private void update() {
-        /*int i = 0;
-        if (Life == 0) {
-            timer.stop();
-            restart();
-            keys.clear();
-            running = false;
-            Main.SetWindow_Scene(Main.Menu_screen);
-        }
-        if (blocks.size() == 0) {
-            goToNewLevel();
-        }
-        while (i < blocks.size()) {
-            Block buffer = blocks.get(i);
-            //testCollision(buffer, ball);
-            //if(buffer.bonus.isCatched)
-           // {
-                //buffer.bonus.useBonus(player,ball);
-            //    buffer.bonus.setVisible(false);
-            //}
-            if (buffer.isDestroyed()) {
-                //buffer.setVisible(false);
-                //blocks.remove(buffer);
-                buffer.bonus.parallelTransition.play();
-                blocks.remove(buffer);
-                int your_score = Integer.parseInt(score.getText());
-                score.setText(Integer.toString(your_score + 1));
-            } else
-                i++;
-        }
-        if (ball.update(player))
-            decLife();
-        if (isIntersectingPaddleBall(player, ball)) {
-            ball.velocityY = -ball.velocityY;
-            if (player.isMoveLeft() && ball.isMoveRight())
-                ball.velocityX = ball.velocityX <= MIN_SPEED_OF_BALL ? MIN_SPEED_OF_BALL : ball.velocityX - 0.2;
-            if (player.isMoveRight() && ball.isMoveLeft())
-                ball.velocityX = ball.velocityX <= -MIN_SPEED_OF_BALL ? MIN_SPEED_OF_BALL : ball.velocityX - 0.2;
-            if (player.isMoveLeft() && ball.isMoveLeft())
-                ball.velocityX = ball.velocityX >= MAX_SPEED_OF_BALL ? MAX_SPEED_OF_BALL : ball.velocityX + 0.2;
-            if (player.isMoveRight() && ball.isMoveRight())
-                ball.velocityX = ball.velocityX >= -MAX_SPEED_OF_BALL ? MAX_SPEED_OF_BALL : ball.velocityX + 0.2;
-        }*/
         gamePlaying();
         if (isPressed(KeyCode.ESCAPE)) {
             keys.clear();
@@ -354,8 +227,6 @@ public class Game {
      * Restarting the game
      */
     public void restart() {
-        //gameRoot.getChildren().remove(player);
-        //gameRoot.getChildren().remove(ball);
         ball.goToStartPosition();
         player.goToStartPosition();
         score.setText("0");
@@ -372,15 +243,6 @@ public class Game {
         blocks.clear();
         Create_blocks(Level_data.levels[levelNumber]);
         scrollBackgroundIV();
-         /* Group remoweRoot=new Group();
-	    scene.setRoot(remoweRoot);
-        root.getChildren().remove(appRoot);
-	    appRoot.getChildren().removeAll(backgroundIV,scorefield,score,lifefield,lives,gameRoot);
-	    //appRoot=new Pane();
-	    //gameRoot=new Pane();
-	    gameRoot.getChildren().remove(player);
-	    Main.Game_screen=set_scene();*/
-        //blocks.clear();
     }
 
     private boolean isPressed(KeyCode key) {
@@ -418,10 +280,6 @@ public class Game {
      * Game processing
      */
     public void Game_Processing() {
-        /*if(running==false) {
-            initContent();
-            root.getChildren().add(appRoot);
-        }*/
         running = true;
         System.out.println(running);
         timer = new AnimationTimer() {

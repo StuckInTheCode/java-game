@@ -20,7 +20,7 @@ import javafx.stage.Stage;
 
 /** Class generate a main menu and submenus of the game
  * @author Kovbasa G.A.
- * @version 0.3
+ * @version 0.4-alpha
  */
 public class Main extends Application {
 

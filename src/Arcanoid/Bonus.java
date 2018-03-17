@@ -67,27 +67,10 @@ public class Bonus extends Pane{
                 isCatched = true;
             }
         });
-        //parallelTransition.play();
     }
 
     private boolean testPaddleCollision() {
         return this.getBoundsInParent().intersects(Game.player.getBoundsInParent());
-    }
-
-    void useBonus(Paddle paddle, Ball ball)
-    {
-       /* switch(this.type)
-        {
-            case FROZEN:{
-                ball.
-                break;
-            }
-            case LIFE:
-            {
-
-            }
-
-        }*/
     }
 
 }
