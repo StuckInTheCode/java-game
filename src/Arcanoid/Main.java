@@ -1,6 +1,5 @@
 package Arcanoid;
 
-import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
@@ -66,7 +65,9 @@ public class Main extends Application {
         MenuItem level1 = new MenuItem("Level 1");
         level1.setCanChoose(true);
         level1.setOnActivate(() -> {
+
             Game.levelNumber =0;
+            MyGame.restart();
             System.out.println(Game.levelNumber);
 
         });
@@ -74,12 +75,14 @@ public class Main extends Application {
         level2.setCanChoose(true);
         level2.setOnActivate(() -> {
             Game.levelNumber =1;
+            MyGame.restart();
 
         });
         MenuItem level3 = new MenuItem("Level 3");
         level3.setCanChoose(true);
         level3.setOnActivate(() -> {
             Game.levelNumber =2;
+            MyGame.restart();
 
         });
         MenuItem levelsBack = new MenuItem("RETURN");
@@ -100,10 +103,10 @@ public class Main extends Application {
 			try {
 				//window.setTitle("Star Arcanoid");
 				//window.setScene(Game_screen);
-				if(!Game.isRunning()) {
+				//if(!Game.isRunning()) {
                     //MyGame = new Game();
-                    Game_screen=MyGame.set_scene();
-                }
+                //    Game_screen=MyGame.set_scene();
+                //}
                 window.setScene(Game_screen);
 				if(!autoPlay)
 				MyGame.Game_Processing();
@@ -305,6 +308,7 @@ public class Main extends Application {
     	window=primaryStage;
     	window.setResizable(false);
     	window.sizeToScene();
+        Game_screen=MyGame.set_scene();
         Menu_screen = new Scene(createContent());
         Menu_screen.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.UP) {
