@@ -14,13 +14,14 @@ public class FramesAnimation extends Transition{
     private final int offsetY;
     private final int width;
     private final int height;
-    public FramesAnimation(
+
+    public FramesAnimation
+            (
             ImageView imageView,
             Duration duration,
             int count, int colomns,
             int offsetX, int offsetY,
             int width, int height
-
     )
     {
         this.imageView=imageView;
@@ -38,8 +39,8 @@ public class FramesAnimation extends Transition{
     @Override
     protected void interpolate(double frac) {
         final int index = Math.min((int)Math.floor(frac*count),count-1);
-        final int x = (index%colomns)*width+offsetX;
-        final int y = (index/colomns)*height+offsetY;
+        final int y = (index % colomns) * width + offsetX;
+        final int x = (index / colomns) * height + offsetY;
         imageView.setViewport(new Rectangle2D(x,y,width,height));
     }
 }

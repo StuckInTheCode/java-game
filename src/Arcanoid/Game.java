@@ -33,7 +33,8 @@ public class Game {
      * Containers of elements of the main node and game content
      */
     private Pane appRoot = new Pane();
-    public static Pane gameRoot = new Pane();
+    public static Pane npsRoot = new Pane();
+    private Pane gameRoot = new Pane();
     private ImageView backgroundIV;
 
     private Text scorefield;
@@ -61,11 +62,11 @@ public class Game {
      */
     private Parent initContent() {
         backgroundIV = new ImageView(backgroundImg);
-        backgroundIV.autosize();
-        backgroundIV.setLayoutY(-(600 * (3 - levelNumber)));
-
+        backgroundIV.setFitHeight(77 * BLOCK_SIZE);
+        backgroundIV.setFitWidth(26 * BLOCK_SIZE);
         System.out.println(levelNumber);
         Create_blocks(Level_data.levels[levelNumber]);
+        backgroundIV.setLayoutY(-(600 * (3)));
 
         scorefield = new Text("Your score:");
         scorefield.setX(700);
@@ -86,32 +87,32 @@ public class Game {
         gameRoot.getChildren().add(player);
         appRoot.setPrefSize(800, 600);
         appRoot.setMaxSize(800, 600);
-        appRoot.getChildren().addAll(backgroundIV, scorefield, score, lifefield, lives, gameRoot);
+        appRoot.getChildren().addAll(backgroundIV, scorefield, score, lifefield, lives, gameRoot, npsRoot);
         return appRoot;
     }
 
     private void scrollBackgroundIV() {
-        int step = 1;                                         //doesnt work finally
-        /*double current = backgroundIV.getLayoutY();
-        //ScrollPane pane= new ScrollPane();
-        while (current != (-600 * (3 - levelNumber))) {
-            // try {
-            //     Thread.sleep(30);
-            current = backgroundIV.getLayoutY();
-            try {
-                Thread.sleep(2);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            backgroundIV.setLayoutY(current + step);
-        }*/
-        backgroundIV.setLayoutY(-600 * (3 - levelNumber));
+        //double step=0.05;                                    //okay speed?
+        double step = 0.5;
+        double currentLayoutBack = backgroundIV.getLayoutY();
+        try {
+            Thread.sleep(5);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        //Consumer<? super Block> consumer = block->block.moveDown(step);
+        Game.blocks.forEach(block -> block.setTranslateY(block.getTranslateY() + step));
+        backgroundIV.setLayoutY(currentLayoutBack + step);
+        //for (Block block : Game.blocks) {
+        //    block.setTranslateY(block.getTranslateY()+step);
+        // }
     }
 
     private void goToNewLevel() {
         if (levelNumber < colvoOfLevels) {
             levelNumber++;
-            scrollBackgroundIV();
+            //scrollBackgroundIV();
+            backgroundIV.setLayoutY(-600 * (3 - levelNumber));
             Create_blocks(Level_data.levels[levelNumber]);
         } else {
             levelNumber = 0;
@@ -131,7 +132,7 @@ public class Game {
      */
     private void Create_blocks(String[] strings) {
 
-        for (int i = 0; i < Level_data.levels[levelNumber].length; i++) {
+        /*for (int i = 0; i < Level_data.levels[levelNumber].length; i++) {
             String line = Level_data.levels[levelNumber][i];
             for (int j = 0; j < line.length(); j++) {
                 switch (line.charAt(j)) {
@@ -161,14 +162,46 @@ public class Game {
                 }
 
             }
-        }
+        }*/
 
+        for (int i = 0; i < Level_data.levels[levelNumber].length; i++) {
+            String line = Level_data.levels[levelNumber][i];
+            for (int j = 0; j < line.length(); j++) {
+                switch (line.charAt(j)) {
+                    case '0':
+                        break;
+                    case '1':
+                        createBlock(j * BLOCK_SIZE, i * BLOCK_SIZE, Block.BlockType.BUBBLE);
+                        break;
+                    case '2':
+                        createBlock(j * BLOCK_SIZE, i * BLOCK_SIZE, Block.BlockType.CRYSTALL);
+                        break;
+                    case '3':
+                        createBlock(j * BLOCK_SIZE, i * BLOCK_SIZE, Block.BlockType.BONUS);
+                        break;
+                    case '4':
+                        createBlock(j * BLOCK_SIZE, i * BLOCK_SIZE, Block.BlockType.BRICK);
+                        break;
+                    case '5':
+                        createBlock(j * BLOCK_SIZE, i * BLOCK_SIZE, Block.BlockType.STONE);
+                        break;
+                    case '6':
+                        createBlock(j * BLOCK_SIZE, i * BLOCK_SIZE, Block.BlockType.DIAMAND);
+                        break;
+                    case '7':
+                        createBlock(j * BLOCK_SIZE, i * BLOCK_SIZE, Block.BlockType.UNBREAKABLE_BLOCK);
+                        break;
+                }
+
+            }
+        }
     }
 
     /**
      * Main process, that checks updates and call the redrawing methods
      */
     private void gamePlaying() {
+        scrollBackgroundIV();
         int i = 0;
         if (Life == 0) {
             timer.stop();
@@ -182,8 +215,13 @@ public class Game {
         }
         while (i < blocks.size()) {
             Block buffer = blocks.get(i);
-            if (buffer.isDestroyed()) {     //checking blocks sre destroyed
-                buffer.bonus.parallelTransition.play();
+            if (buffer.isDestroyed()) {     //checking blocks are destroyed
+                buffer.setVisible(false);
+                int rand = (int) (Math.random() * 10);
+                System.out.println(rand);
+                if (rand > 6) {
+                    buffer.bonus.play();
+                }
                 blocks.remove(buffer);
                 int your_score = Integer.parseInt(score.getText());
                 score.setText(Integer.toString(your_score + 1));
@@ -205,7 +243,7 @@ public class Game {
         gamePlaying();
         if (isPressed(KeyCode.ESCAPE)) {
             keys.clear();
-            timer.stop(); //working!
+            timer.stop();//working!
             Main.SetWindow_Scene(Main.Menu_screen);
 
         }
@@ -236,7 +274,6 @@ public class Game {
         while (i < blocks.size()) {
             Block buffer = blocks.get(i);
             buffer.setVisible(false);
-            //blocks.remove(buffer);
             gameRoot.getChildren().remove(buffer);
             i++;
         }
