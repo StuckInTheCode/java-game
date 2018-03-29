@@ -13,10 +13,16 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.util.LinkedList;
 
 /** Class generate a main menu and submenus of the game
  * @author Kovbasa G.A.
@@ -33,7 +39,8 @@ public class Main extends Application {
     /**Variable of the main window*/
     private static Stage window;
 
-    static Scene Game_screen, Menu_screen;
+    //public static VBox scoresTable = new VBox();
+    public static VBox scoresTable = new VBox();
 
     /**The object of the game to launch*/
     private static Game MyGame= new Game();
@@ -44,6 +51,9 @@ public class Main extends Application {
     private static int currentItem = 0;
 
     private boolean autoPlay=false;
+    public static LinkedList<Scores> playerScores = new LinkedList<>();
+    static Scene Game_screen, Menu_screen, Scores_screen;
+
     /**Setting the required scene
      * @param scene
      */
@@ -70,6 +80,10 @@ public class Main extends Application {
             Game.levelNumber =0;
             MyGame.restart();
             System.out.println(Game.levelNumber);
+            //if(!autoPlay)
+            //MyGame.Game_Processing();
+            // else
+            //     MyGame.AutoPlay();
 
         });
         MenuItem level2 = new MenuItem("Level 2");
@@ -77,6 +91,10 @@ public class Main extends Application {
         level2.setOnActivate(() -> {
             Game.levelNumber =1;
             MyGame.restart();
+            //if(!autoPlay)
+            //MyGame.Game_Processing();
+            // else
+            //    MyGame.AutoPlay();
 
         });
         MenuItem level3 = new MenuItem("Level 3");
@@ -84,6 +102,10 @@ public class Main extends Application {
         level3.setOnActivate(() -> {
             Game.levelNumber =2;
             MyGame.restart();
+            //if(!autoPlay)
+            //MyGame.Game_Processing();
+            //else
+            //    MyGame.AutoPlay();
 
         });
         MenuItem levelsBack = new MenuItem("RETURN");
@@ -92,7 +114,46 @@ public class Main extends Application {
 
         MenuItem itemExit = new MenuItem("EXIT");
         itemExit.setOnActivate(() -> System.exit(0));
-        
+
+        MenuItem scores = new MenuItem("SCORES");
+        scoresTable.setMinHeight(400);
+        scoresTable.setMinWidth(400);
+        scoresTable.setAlignment(Pos.CENTER);
+        scoresTable.setLayoutY(100);
+        Rectangle r = new Rectangle();
+        r.setHeight(400);
+        r.setWidth(700);
+        r.setLayoutY(100);
+        r.setFill(Color.GOLD);
+        r.setOpacity(0.5);
+        r.setVisible(false);
+
+        for (Scores score : playerScores) {
+
+            ScoreTableItem e = new ScoreTableItem(score, playerScores.indexOf(score) + 1);
+            scoresTable.getChildren().add(e);
+        }
+        //scoresTable.setPannable(false);
+        //scoresTable.setDisable(true);
+        scoresTable.setVisible(false);
+        SubMenu records = new SubMenu(levelsBack);
+        records.setLayoutY(500);
+        //scoresTable.getChildrenUnmodifiable().add(backgroundIV);
+        //if(scoresTable!=null)
+        //Scores_screen.setRoot(scoresTable);
+        scores.setOnActivate(() -> {
+
+                    menuBox.setSubMenu(records);
+                    //scoresTable.setDisable(false);
+                    r.setVisible(true);
+                    scoresTable.setVisible(true);
+                    //window.setScene(Scores_screen);
+                    //for (Scores score : playerScores) {
+                    //    menuRoot.getChildren().add(score);
+                    // }
+                }
+        );
+
         MenuItem options = new MenuItem("OPTIONS");
 
         MenuItem chooseLevel = new MenuItem("CHOOSE LEVEL");
@@ -117,8 +178,8 @@ public class Main extends Application {
 				e.printStackTrace();
 			}
 		});
-        
-        SubMenu MainMenu = new SubMenu(	itemPlay,chooseLevel,options,itemExit);
+
+        SubMenu MainMenu = new SubMenu(itemPlay, chooseLevel, options, scores, itemExit);
         //MenuItem sound = new MenuItem("SOUND");
         //MenuItem video = new MenuItem("VIDEO");
         //MenuItem keys = new MenuItem("KEYS");
@@ -144,6 +205,8 @@ public class Main extends Application {
         });
         levelsBack.setOnActivate(() -> {
             backgroundIV.setLayoutY(0);
+            scoresTable.setVisible(false);
+            r.setVisible(false);
             menuBox.setSubMenu(MainMenu);
 
         });
@@ -181,6 +244,8 @@ public class Main extends Application {
         }*/
 
        menuRoot.getChildren().addAll(backgroundIV,menuBox, aboutIV);
+        menuRoot.getChildren().add(r);
+        menuRoot.getChildren().add(scoresTable);
 
        return menuRoot;
     }
@@ -284,6 +349,36 @@ public class Main extends Application {
     	window=primaryStage;
     	window.setResizable(false);
     	window.sizeToScene();
+        try {
+            FileInputStream fin = new FileInputStream("Record.bin");
+            ObjectInputStream ois = new ObjectInputStream(fin);
+            Scores s = null;
+            do {
+                //for (Scores score : playerScores) {
+
+                try {
+                    s = (Scores) ois.readObject();
+                    playerScores.add(s);
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+                //System.out.println(s.score);
+                //if(s!=null)
+
+            } while (s != null);
+            // }
+            //scoresTable.playerScores.forEach(s -> oos.read(s));
+            //oos.read(scoresTable.);
+            ois.close();
+            fin.close();
+
+        } catch (IOException e) {
+
+        }
+        /*catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }*/
+
         Game_screen=MyGame.set_scene();
         Menu_screen = new Scene(createContent());
         Menu_screen.setOnKeyPressed(event -> {
@@ -293,14 +388,12 @@ public class Main extends Application {
                 	menuBox.getMenuItem(--currentItem).setActive(true);
                 }
             }
-
             if (event.getCode() == KeyCode.DOWN) {
                 if (currentItem < MenuBox.subMenu.getChildren().size() - 1) {
                 	menuBox.getMenuItem(currentItem).setActive(false);
                 	menuBox.getMenuItem(++currentItem).setActive(true);
                 }
             }
-
             if (event.getCode() == KeyCode.ENTER) {
                 if(menuBox.getMenuItem(currentItem).isCanChoose()) {
                     for (int i=0;i<MenuBox.subMenu.getChildren().size() - 1;i++)

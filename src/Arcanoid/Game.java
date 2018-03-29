@@ -44,7 +44,7 @@ public class Game {
      * Main group of the scene
      */
     private Group root = new Group();
-    private Text score;
+    static Text score;
     private int Life;
     private AnimationTimer timer;
     public static Paddle player;
@@ -205,6 +205,11 @@ public class Game {
         int i = 0;
         if (Life == 0) {
             timer.stop();
+            Scores s = new Scores("player", Integer.parseInt(score.getText()));
+            Main.playerScores.add(s);
+            ScoreTableItem e = new ScoreTableItem(s, Main.playerScores.size());
+            //scoresTable.getChildrenUnmodifiable().add(e);
+            Main.scoresTable.getChildren().add(e);
             restart();
             keys.clear();
             running = false;
