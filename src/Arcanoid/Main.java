@@ -1,5 +1,6 @@
 package Arcanoid;
 
+import Savings.GameSavings;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
@@ -43,7 +44,7 @@ public class Main extends Application {
     public static VBox scoresTable = new VBox();
 
     /**The object of the game to launch*/
-    private static Game MyGame= new Game();
+    public static Game MyGame = new Game();
 
     /**Container for storing menu items*/
     private static MenuBox menuBox;
@@ -51,7 +52,9 @@ public class Main extends Application {
     private static int currentItem = 0;
 
     private boolean autoPlay=false;
+
     public static LinkedList<Scores> playerScores = new LinkedList<>();
+
     static Scene Game_screen, Menu_screen, Scores_screen;
 
     /**Setting the required scene
@@ -113,7 +116,11 @@ public class Main extends Application {
 
 
         MenuItem itemExit = new MenuItem("EXIT");
-        itemExit.setOnActivate(() -> System.exit(0));
+        itemExit.setOnActivate(() -> {
+            MyGame.savings = new GameSavings(MyGame);
+            MyGame.savings.saveGame();
+            System.exit(0);
+        });
 
         MenuItem scores = new MenuItem("SCORES");
         scoresTable.setMinHeight(400);
@@ -378,8 +385,24 @@ public class Main extends Application {
         /*catch (ClassNotFoundException e) {
             e.printStackTrace();
         }*/
+        MyGame.savings = MyGame.savings.loadGame();
+        //savings.loadGame();
+        Game_screen = MyGame.set_scene();
+        if (MyGame.savings != null) {
+            //MyGame.loadSavings(savings);
+            MyGame.savings.setChooseActionWindow(primaryStage, MyGame.savings);
+        }
+        /*if(savings.saving_game.isRunning())
+            savings.setChooseActionWindow(primaryStage);
 
-        Game_screen=MyGame.set_scene();
+        if(savings.saving_game==null) {
+            Game_screen = MyGame.set_scene();
+        }
+        else {
+            MyGame=savings.saving_game;
+            Game_screen =savings.saving_game.scene;
+        }*/
+
         Menu_screen = new Scene(createContent());
         Menu_screen.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.UP) {

@@ -3,11 +3,13 @@ package Arcanoid;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
+import java.io.Serializable;
+
 /**
  * Class Paddle
  * @version 0.0 - Inherited from Rectangle
  */
-public class Paddle extends Rectangle {
+public class Paddle extends Rectangle implements Serializable {
 
 	private static final double SCREEN_WIDTH = 800;
 	private static double VELOCITY = 1.0;

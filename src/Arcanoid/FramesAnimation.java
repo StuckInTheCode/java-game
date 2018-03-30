@@ -6,7 +6,9 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
 
-public class FramesAnimation extends Transition{
+import java.io.Serializable;
+
+public class FramesAnimation extends Transition implements Serializable {
     private final ImageView imageView;
     private final int count;
     private final int colomns;

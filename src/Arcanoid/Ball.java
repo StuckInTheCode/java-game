@@ -3,11 +3,13 @@ package Arcanoid;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
+import java.io.Serializable;
+
 /**
  * Class Ball
  * @version 0.1 - Inherited from Circle
  */
-public class Ball extends Circle{
+public class Ball extends Circle implements Serializable {
 
     public static final double BALL_VELOCITY = 1.0;
     private static final double MAX_SPEED_OF_BALL = 1.4;
@@ -17,8 +19,8 @@ public class Ball extends Circle{
     Point2D left;
     Point2D right;
     Point2D center;*/
-    double velocityX=0;
-    private double velocityY = -0;
+    double velocityX = 0;
+    double velocityY = -0;
     private static final double SCREEN_WIDTH=800;
     private static final double SCREEN_HEIGHT=600;
 
@@ -229,5 +231,13 @@ public class Ball extends Circle{
     private void starting() {
         velocityX=BALL_VELOCITY;
         velocityY=-BALL_VELOCITY;
+    }
+
+    public double getVelocityX() {
+        return velocityX;
+    }
+
+    public double getVelocityY() {
+        return velocityY;
     }
 }

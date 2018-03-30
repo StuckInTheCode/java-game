@@ -1,5 +1,6 @@
 package Arcanoid;
 
+import Savings.GameSavings;
 import javafx.animation.AnimationTimer;
 import javafx.scene.Group;
 import javafx.scene.Parent;
@@ -20,40 +21,49 @@ import static Arcanoid.Block.createBlock;
  */
 public class Game {
     private static final double BALL_VELOCITY = 1;
+    private static final int BLOCK_SIZE = 31;
     /**
      * Container for storing elements (blocks) for the current level
      */
+    public GameSavings savings = new GameSavings();
+
     public static ArrayList<Block> blocks = new ArrayList<>();
     private HashMap<KeyCode, Boolean> keys = new HashMap<>();
+
     private static boolean running = false;
+
     private static Image backgroundImg = new Image("java.png");
+    public int Score;
+
     public static Ball ball;
-    private static final int BLOCK_SIZE = 31;
+
     /**
      * Containers of elements of the main node and game content
      */
     private Pane appRoot = new Pane();
     public static Pane npsRoot = new Pane();
     private Pane gameRoot = new Pane();
-    private ImageView backgroundIV;
 
     private Text scorefield;
+    public int Life;
     private Text lifefield;
     private Text lives;
     /**
      * Main group of the scene
      */
     private Group root = new Group();
-    static Text score;
-    private int Life;
-    private AnimationTimer timer;
-    public static Paddle player;
-    public static int levelNumber = 0;
-    private final int colvoOfLevels = 2;
     /**
      * Game scene
      */
-    private Scene scene = null;
+    public Scene scene = null;
+    private ImageView backgroundIV;
+    private AnimationTimer timer;
+
+    public static Paddle player;
+
+    public static int levelNumber = 0;
+    private Text score;
+    private int colvoOfLevels = 2;
 
     /**
      * Initialization content on the scene
@@ -66,8 +76,8 @@ public class Game {
         backgroundIV.setFitWidth(26 * BLOCK_SIZE);
         System.out.println(levelNumber);
         Create_blocks(Level_data.levels[levelNumber]);
+        savings.LEVEL = Level_data.levels[levelNumber];
         backgroundIV.setLayoutY(-(600 * (3)));
-
         scorefield = new Text("Your score:");
         scorefield.setX(700);
         scorefield.setY(50);
@@ -201,14 +211,13 @@ public class Game {
      * Main process, that checks updates and call the redrawing methods
      */
     private void gamePlaying() {
-        scrollBackgroundIV();
+        //scrollBackgroundIV();
         int i = 0;
         if (Life == 0) {
             timer.stop();
             Scores s = new Scores("player", Integer.parseInt(score.getText()));
             Main.playerScores.add(s);
             ScoreTableItem e = new ScoreTableItem(s, Main.playerScores.size());
-            //scoresTable.getChildrenUnmodifiable().add(e);
             Main.scoresTable.getChildren().add(e);
             restart();
             keys.clear();
@@ -227,6 +236,10 @@ public class Game {
                 if (rand > 6) {
                     buffer.bonus.play();
                 }
+                String line = savings.LEVEL[(int) buffer.getLayoutY() / 31];
+                char[] charline = line.toCharArray();
+                charline[(int) buffer.getLayoutX() / 31] = '0';
+                savings.LEVEL[(int) buffer.getLayoutY() / 31] = String.valueOf(charline);
                 blocks.remove(buffer);
                 int your_score = Integer.parseInt(score.getText());
                 score.setText(Integer.toString(your_score + 1));
@@ -287,6 +300,41 @@ public class Game {
         scrollBackgroundIV();
     }
 
+    public void loadSavings(GameSavings savings) {
+        ball.setTranslateX(savings.ballX);
+        ball.setTranslateY(savings.ballY);
+        ball.velocityX = savings.ball_velocityX;
+        ball.velocityY = savings.ball_velocityY;
+        player.setTranslateX(savings.playerX);
+        player.setTranslateY(savings.playerY);
+
+        Life = savings.current_life;
+        Score = savings.current_score;
+        score.setText(Integer.toString(Score));
+        lives.setText(Integer.toString(Life));
+        int i = 0;
+        while (i < blocks.size()) {
+            Block buffer = blocks.get(i);
+            buffer.setVisible(false);
+            gameRoot.getChildren().remove(buffer);
+            i++;
+        }
+        blocks.clear();
+        //Create_blocks(Level_data.levels[levelNumber]);
+        Create_blocks(savings.LEVEL);
+        /*int i = 0;
+        while (i < blocks.size()) {
+            Block buffer = blocks.get(i);
+            buffer.setVisible(false);
+            gameRoot.getChildren().remove(buffer);
+            i++;
+        }*/
+        //blocks.clear();
+        //blocks=savings.blocks;
+        //Create_blocks(Level_data.levels[levelNumber]);
+        //scrollBackgroundIV();
+    }
+
     private boolean isPressed(KeyCode key) {
         return keys.getOrDefault(key, false);
     }
@@ -340,6 +388,7 @@ public class Game {
     }
 
     public void AutoPlay() {
+        running = true;
         player.setVelocity(Ball.BALL_VELOCITY);
         timer = new AnimationTimer() {
             @Override

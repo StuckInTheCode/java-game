@@ -10,7 +10,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 
-public class Bonus extends Pane{
+import java.io.Serializable;
+
+public class Bonus extends Pane implements Serializable {
     private static final Image bonus = new Image("bonus.png");
     public TranslateTransition translateTransition;
     public Point2D playerVelocity = new Point2D(0, 0);

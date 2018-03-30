@@ -3,11 +3,17 @@ package Arcanoid;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
+import java.io.Serializable;
+
 /**
  * Class Block
  * @version 0.0 - Inherited from Rectangle
  */
-public class Block extends Rectangle{
+class BasicBlock extends Rectangle implements Serializable {
+
+}
+
+public class Block extends Rectangle {
 	boolean destroyed = false;
     public Bonus bonus;
     int breakable=0;
@@ -121,7 +127,8 @@ public class Block extends Rectangle{
     void playBonus() {
 
     }
-	/* Delete()
+
+    /* Delete()
 	{
 		Game.gameRoot.getChildren().remove(this);
 		this.setVisible(false);
