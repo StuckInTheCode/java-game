@@ -45,6 +45,7 @@ public class Game {
     private Pane gameRoot = new Pane();
 
     private Text scorefield;
+    public String level[];
     public int Life;
     private Text lifefield;
     private Text lives;
@@ -62,8 +63,9 @@ public class Game {
     public static Paddle player;
 
     public static int levelNumber = 0;
-    private Text score;
+
     private int colvoOfLevels = 2;
+    private Text score;
 
     /**
      * Initialization content on the scene
@@ -76,7 +78,8 @@ public class Game {
         backgroundIV.setFitWidth(26 * BLOCK_SIZE);
         System.out.println(levelNumber);
         Create_blocks(Level_data.levels[levelNumber]);
-        savings.LEVEL = Level_data.levels[levelNumber];
+        level = Level_data.levels[levelNumber];
+        //savings.LEVEL=Level_data.levels[levelNumber];
         backgroundIV.setLayoutY(-(600 * (3)));
         scorefield = new Text("Your score:");
         scorefield.setX(700);
@@ -236,10 +239,11 @@ public class Game {
                 if (rand > 6) {
                     buffer.bonus.play();
                 }
-                String line = savings.LEVEL[(int) buffer.getLayoutY() / 31];
+                String line = level[(int) buffer.getLayoutY() / 31];
                 char[] charline = line.toCharArray();
                 charline[(int) buffer.getLayoutX() / 31] = '0';
-                savings.LEVEL[(int) buffer.getLayoutY() / 31] = String.valueOf(charline);
+                level[(int) buffer.getLayoutY() / 31] = String.valueOf(charline);
+                savings.LEVEL = level;
                 blocks.remove(buffer);
                 int your_score = Integer.parseInt(score.getText());
                 score.setText(Integer.toString(your_score + 1));

@@ -385,11 +385,13 @@ public class Main extends Application {
         /*catch (ClassNotFoundException e) {
             e.printStackTrace();
         }*/
-        MyGame.savings = MyGame.savings.loadGame();
+        GameSavings s = MyGame.savings.loadGame();
+        //MyGame.savings = MyGame.savings.loadGame();
         //savings.loadGame();
         Game_screen = MyGame.set_scene();
-        if (MyGame.savings != null) {
+        if (s != null) {
             //MyGame.loadSavings(savings);
+            MyGame.savings = s;
             MyGame.savings.setChooseActionWindow(primaryStage, MyGame.savings);
         }
         /*if(savings.saving_game.isRunning())
