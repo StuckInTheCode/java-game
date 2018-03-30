@@ -239,11 +239,11 @@ public class Game {
                 if (rand > 6) {
                     buffer.bonus.play();
                 }
-                String line = level[(int) buffer.getLayoutY() / 31];
+                String line = level[(int) (buffer.getLayoutY() / BLOCK_SIZE)];
                 char[] charline = line.toCharArray();
-                charline[(int) buffer.getLayoutX() / 31] = '0';
-                level[(int) buffer.getLayoutY() / 31] = String.valueOf(charline);
-                savings.LEVEL = level;
+                charline[(int) (buffer.getLayoutX() / BLOCK_SIZE)] = '0';
+                level[(int) (buffer.getLayoutY() / BLOCK_SIZE)] = String.valueOf(charline);
+                //savings.LEVEL = level;
                 blocks.remove(buffer);
                 int your_score = Integer.parseInt(score.getText());
                 score.setText(Integer.toString(your_score + 1));

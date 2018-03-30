@@ -3,15 +3,10 @@ package Arcanoid;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
-import java.io.Serializable;
-
 /**
  * Class Block
  * @version 0.0 - Inherited from Rectangle
  */
-class BasicBlock extends Rectangle implements Serializable {
-
-}
 
 public class Block extends Rectangle {
 	boolean destroyed = false;

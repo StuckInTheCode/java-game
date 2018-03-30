@@ -20,6 +20,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+import java.io.EOFException;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -359,7 +360,7 @@ public class Main extends Application {
         try {
             FileInputStream fin = new FileInputStream("Record.bin");
             ObjectInputStream ois = new ObjectInputStream(fin);
-            Scores s = null;
+            /*Scores s = null;
             do {
                 //for (Scores score : playerScores) {
 
@@ -372,11 +373,20 @@ public class Main extends Application {
                 //System.out.println(s.score);
                 //if(s!=null)
 
-            } while (s != null);
+            } while (s != null);*/
+            while (true) {
+                try {
+                    playerScores.add((Scores) ois.readObject());
+                } catch (EOFException e) {
+                    break;
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
             // }
             //scoresTable.playerScores.forEach(s -> oos.read(s));
             //oos.read(scoresTable.);
-            ois.close();
+            //ois.close();
             fin.close();
 
         } catch (IOException e) {
