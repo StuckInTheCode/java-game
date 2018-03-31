@@ -177,8 +177,8 @@ public class Game {
             }
         }*/
 
-        for (int i = 0; i < Level_data.levels[levelNumber].length; i++) {
-            String line = Level_data.levels[levelNumber][i];
+        for (int i = 0; i < strings.length; i++) {
+            String line = strings[i];
             for (int j = 0; j < line.length(); j++) {
                 switch (line.charAt(j)) {
                     case '0':
@@ -239,9 +239,10 @@ public class Game {
                 if (rand > 6) {
                     buffer.bonus.play();
                 }
-                String line = level[(int) (buffer.getLayoutY() / BLOCK_SIZE)];
+                int currentLevel = (int) (buffer.getY() / BLOCK_SIZE);
+                String line = level[currentLevel];
                 char[] charline = line.toCharArray();
-                charline[(int) (buffer.getLayoutX() / BLOCK_SIZE)] = '0';
+                charline[(int) (buffer.getX() / BLOCK_SIZE)] = '0';
                 level[(int) (buffer.getLayoutY() / BLOCK_SIZE)] = String.valueOf(charline);
                 //savings.LEVEL = level;
                 blocks.remove(buffer);
@@ -324,6 +325,7 @@ public class Game {
             i++;
         }
         blocks.clear();
+        level = savings.LEVEL;
         //Create_blocks(Level_data.levels[levelNumber]);
         Create_blocks(savings.LEVEL);
         /*int i = 0;

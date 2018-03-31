@@ -124,33 +124,44 @@ public class Main extends Application {
         });
 
         MenuItem scores = new MenuItem("SCORES");
-        scoresTable.setMinHeight(400);
+        MenuItem levelsBackFromRecords = new MenuItem("RETURN");
+        //levelsBackFromRecords.setLayoutY(400);
+        scoresTable.setMinHeight(300);
         scoresTable.setMinWidth(400);
-        scoresTable.setAlignment(Pos.CENTER);
-        scoresTable.setLayoutY(100);
+        //scoresTable.setAlignment(Pos.CENTER);
+        scoresTable.setLayoutY(200);
         Rectangle r = new Rectangle();
-        r.setHeight(400);
-        r.setWidth(700);
-        r.setLayoutY(100);
-        r.setFill(Color.GOLD);
-        r.setOpacity(0.5);
+        r.setHeight(300);
+        r.setWidth(800);
+        r.setLayoutY(200);
+        r.setFill(Color.GREY);
+        r.setOpacity(0.3);
         r.setVisible(false);
-
+        int colvo = 0;
+        //int i=0;
+        //for (Scores score : playerScores) {
+        /*while(colvo<playerScores.size()){
+            Scores score = playerScores.get(colvo);
+            //if((playerScores.size()-colvo)<10) {
+                ScoreTableItem e = new ScoreTableItem(score, playerScores.indexOf(score) + 1);
+                scoresTable.getChildren().add(e);
+            //}
+            colvo++;
+        }*/
         for (Scores score : playerScores) {
-
             ScoreTableItem e = new ScoreTableItem(score, playerScores.indexOf(score) + 1);
             scoresTable.getChildren().add(e);
         }
         //scoresTable.setPannable(false);
         //scoresTable.setDisable(true);
         scoresTable.setVisible(false);
-        SubMenu records = new SubMenu(levelsBack);
-        records.setLayoutY(500);
+        SubMenu records = new SubMenu(levelsBackFromRecords);
+        records.setTranslateY(200);
         //scoresTable.getChildrenUnmodifiable().add(backgroundIV);
         //if(scoresTable!=null)
         //Scores_screen.setRoot(scoresTable);
         scores.setOnActivate(() -> {
-
+            backgroundIV.setLayoutY(-1200);
                     menuBox.setSubMenu(records);
                     //scoresTable.setDisable(false);
                     r.setVisible(true);
@@ -214,6 +225,12 @@ public class Main extends Application {
         levelsBack.setOnActivate(() -> {
             backgroundIV.setLayoutY(0);
             scoresTable.setVisible(false);
+            menuBox.setSubMenu(MainMenu);
+
+        });
+        levelsBackFromRecords.setOnActivate(() -> {
+            backgroundIV.setLayoutY(0);
+            scoresTable.setVisible(false);
             r.setVisible(false);
             menuBox.setSubMenu(MainMenu);
 
@@ -221,18 +238,13 @@ public class Main extends Application {
         menuBox = new MenuBox(MainMenu);
         menuBox.setTranslateX(0);
         menuBox.setTranslateY(300);
-        
-       //Text about = new Text("Star Arcanoid");
+
        Image about = new Image("arcanoid.png");
        ImageView aboutIV= new ImageView(about);
        aboutIV.setFitHeight(120);
        aboutIV.setFitWidth(520);
        aboutIV.setY(50);
        aboutIV.setX(200);
-       /*about.setTranslateX(250);
-       about.setTranslateY(100);
-       about.setFill(Color.BLUEVIOLET);
-       about.setFont(FONT);*/
 
        menuBox.getMenuItem(0).setActive(true);
 
@@ -349,6 +361,34 @@ public class Main extends Application {
         }
     }
 
+    private void loadingScores() {
+        //try {
+        FileInputStream fin = null;
+        ObjectInputStream ois = null;
+        try {
+            fin = new FileInputStream("Record.bin");
+            ois = new ObjectInputStream(fin);
+
+            while (true) {
+                try {
+                    //ois = new ObjectInputStream(fin);
+                    playerScores.add((Scores) ois.readObject());
+                    ois.reset();
+                    //ois.available();
+                } catch (EOFException e) {
+                    break;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    break;
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+            fin.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     /**Start method
      * @param primaryStage
      */
@@ -357,53 +397,11 @@ public class Main extends Application {
     	window=primaryStage;
     	window.setResizable(false);
     	window.sizeToScene();
-        try {
-            FileInputStream fin = new FileInputStream("Record.bin");
-            ObjectInputStream ois = new ObjectInputStream(fin);
-            /*Scores s = null;
-            do {
-                //for (Scores score : playerScores) {
-
-                try {
-                    s = (Scores) ois.readObject();
-                    playerScores.add(s);
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
-                //System.out.println(s.score);
-                //if(s!=null)
-
-            } while (s != null);*/
-            while (true) {
-                try {
-                    playerScores.add((Scores) ois.readObject());
-                } catch (EOFException e) {
-                    break;
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
-            }
-            // }
-            //scoresTable.playerScores.forEach(s -> oos.read(s));
-            //oos.read(scoresTable.);
-            //ois.close();
-            fin.close();
-
-        } catch (IOException e) {
-
-        }
+        loadingScores();
         /*catch (ClassNotFoundException e) {
             e.printStackTrace();
         }*/
-        GameSavings s = MyGame.savings.loadGame();
-        //MyGame.savings = MyGame.savings.loadGame();
-        //savings.loadGame();
-        Game_screen = MyGame.set_scene();
-        if (s != null) {
-            //MyGame.loadSavings(savings);
-            MyGame.savings = s;
-            MyGame.savings.setChooseActionWindow(primaryStage, MyGame.savings);
-        }
+
         /*if(savings.saving_game.isRunning())
             savings.setChooseActionWindow(primaryStage);
 
@@ -441,6 +439,15 @@ public class Main extends Application {
 
         primaryStage.setScene(Menu_screen);
         primaryStage.show();
+        GameSavings s = MyGame.savings.loadGame();
+        //MyGame.savings = MyGame.savings.loadGame();
+        //savings.loadGame();
+        Game_screen = MyGame.set_scene();
+        if (s != null) {
+            //MyGame.loadSavings(savings);
+            MyGame.savings = s;
+            MyGame.savings.setChooseActionWindow(primaryStage, MyGame.savings);
+        }
     }
 
     /**main

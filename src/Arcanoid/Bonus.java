@@ -100,6 +100,29 @@ public class Bonus extends Pane implements Serializable {
         }
     }
 
+    public void catchBonus() {
+        switch (type) {
+            case FROZEN: {
+
+                //bonusIV.setVisible(false);
+                break;
+            }
+            case LIFE: {
+                break;
+            }
+            case SPEED: {
+                break;
+            }
+            case LONG_PADDLE: {
+                break;
+            }
+            case NO_BONUS: {
+
+                break;
+            }
+        }
+    }
+
     enum BONUS_TYPE {FROZEN, LIFE, SPEED, LONG_PADDLE, NO_BONUS}
 
 }
