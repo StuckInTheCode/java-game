@@ -1,6 +1,6 @@
 package Arcanoid;
 
-import Savings.GameSavings;
+import Savings.GameRecord;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
@@ -25,6 +25,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.LinkedList;
+
 
 /** Class generate a main menu and submenus of the game
  * @author Kovbasa G.A.
@@ -57,6 +58,8 @@ public class Main extends Application {
     public static LinkedList<Scores> playerScores = new LinkedList<>();
 
     static Scene Game_screen, Menu_screen, Scores_screen;
+    public static boolean reloading = false;
+    static int levelsComplited;
 
     /**Setting the required scene
      * @param scene
@@ -118,8 +121,11 @@ public class Main extends Application {
 
         MenuItem itemExit = new MenuItem("EXIT");
         itemExit.setOnActivate(() -> {
-            MyGame.savings = new GameSavings(MyGame);
-            MyGame.savings.saveGame();
+            //MyGame.savings = new GameSavings(MyGame);
+            //MyGame.savings.saveGame();
+            //MyGame.records= new GameRecord();
+            if (Game.records.record.size() != 0)
+                Game.records.save();
             System.exit(0);
         });
 
@@ -188,8 +194,10 @@ public class Main extends Application {
                 //    Game_screen=MyGame.set_scene();
                 //}
                 window.setScene(Game_screen);
-				if(!autoPlay)
-				MyGame.Game_Processing();
+                if (reloading)
+                    MyGame.reloadTheGame();
+                else if (!reloading && !autoPlay)
+                    MyGame.Game_Processing();
 				else
                     MyGame.AutoPlay();
 			} catch (Exception e) {
@@ -398,21 +406,6 @@ public class Main extends Application {
     	window.setResizable(false);
     	window.sizeToScene();
         loadingScores();
-        /*catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }*/
-
-        /*if(savings.saving_game.isRunning())
-            savings.setChooseActionWindow(primaryStage);
-
-        if(savings.saving_game==null) {
-            Game_screen = MyGame.set_scene();
-        }
-        else {
-            MyGame=savings.saving_game;
-            Game_screen =savings.saving_game.scene;
-        }*/
-
         Menu_screen = new Scene(createContent());
         Menu_screen.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.UP) {
@@ -439,15 +432,25 @@ public class Main extends Application {
 
         primaryStage.setScene(Menu_screen);
         primaryStage.show();
-        GameSavings s = MyGame.savings.loadGame();
-        //MyGame.savings = MyGame.savings.loadGame();
-        //savings.loadGame();
+        Game.records.setChooseActionWindow(primaryStage);
+        GameRecord s = Game.records.loadGame();
+        if (reloading == true) {
+            if (s != null) {
+                //reloading=true;
+                Game.records = s;
+            } else {
+                System.out.println("Can't reload");
+                reloading = false;
+            }
+        }
+        Game_screen = MyGame.set_scene();
+        /*GameSavings s = MyGame.savings.loadGame();
         Game_screen = MyGame.set_scene();
         if (s != null) {
-            //MyGame.loadSavings(savings);
             MyGame.savings = s;
             MyGame.savings.setChooseActionWindow(primaryStage, MyGame.savings);
         }
+        MyGame.levelNumber=s.current_level;*/
     }
 
     /**main

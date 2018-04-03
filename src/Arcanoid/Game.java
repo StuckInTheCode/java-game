@@ -1,5 +1,6 @@
 package Arcanoid;
 
+import Savings.GameRecord;
 import Savings.GameSavings;
 import javafx.animation.AnimationTimer;
 import javafx.scene.Group;
@@ -12,6 +13,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 import static Arcanoid.Block.createBlock;
@@ -26,11 +28,15 @@ public class Game {
      * Container for storing elements (blocks) for the current level
      */
     public GameSavings savings = new GameSavings();
-
+    public static GameRecord records = new GameRecord();
+    public static long first_time;
+    public static String level[];
+    final Date currentDate = new Date();
     public static ArrayList<Block> blocks = new ArrayList<>();
     private HashMap<KeyCode, Boolean> keys = new HashMap<>();
 
     private static boolean running = false;
+    //public static boolean reloading = false;
 
     private static Image backgroundImg = new Image("java.png");
     public int Score;
@@ -45,7 +51,7 @@ public class Game {
     private Pane gameRoot = new Pane();
 
     private Text scorefield;
-    public String level[];
+    public Date time;
     public int Life;
     private Text lifefield;
     private Text lives;
@@ -88,6 +94,7 @@ public class Game {
         score.setX(760);
         score.setY(50);
         lifefield = new Text("Your life:");
+        //lifefield.setFont();
         lifefield.setX(700);
         lifefield.setY(65);
         lives = new Text("3");
@@ -134,6 +141,19 @@ public class Game {
 
     }
 
+    private void goToLevel(int levelNum) {
+        backgroundIV.setLayoutY(-600 * (3 - levelNum));
+        int i = 0;
+        while (i < blocks.size()) {
+            Block buffer = blocks.get(i);
+            buffer.setVisible(false);
+            gameRoot.getChildren().remove(buffer);
+            i++;
+        }
+        blocks.clear();
+        Create_blocks(Level_data.levels[levelNum]);
+    }
+
     public static boolean isRunning() {
         return running;
     }
@@ -144,38 +164,6 @@ public class Game {
      * @param strings strings contain level_data
      */
     private void Create_blocks(String[] strings) {
-
-        /*for (int i = 0; i < Level_data.levels[levelNumber].length; i++) {
-            String line = Level_data.levels[levelNumber][i];
-            for (int j = 0; j < line.length(); j++) {
-                switch (line.charAt(j)) {
-                    case '0':
-                        break;
-                    case '1':
-                        blocks.add(createBlock(j * BLOCK_SIZE, i * BLOCK_SIZE, Block.BlockType.BUBBLE));
-                        break;
-                    case '2':
-                        blocks.add(new Block(j * BLOCK_SIZE, i * BLOCK_SIZE));
-                        break;
-                    case '3':
-                        blocks.add(createBlock(j * BLOCK_SIZE, i * BLOCK_SIZE, Block.BlockType.BONUS));
-                        break;
-                    case '4':
-                        blocks.add(createBlock(j * BLOCK_SIZE, i * BLOCK_SIZE, Block.BlockType.BRICK));
-                        break;
-                    case '5':
-                        blocks.add(createBlock(j * BLOCK_SIZE, i * BLOCK_SIZE, Block.BlockType.STONE));
-                        break;
-                    case '6':
-                        blocks.add(createBlock(j * BLOCK_SIZE, i * BLOCK_SIZE, Block.BlockType.DIAMAND));
-                        break;
-                    case '7':
-                        blocks.add(createBlock(j * BLOCK_SIZE, i * BLOCK_SIZE, Block.BlockType.UNBREAKABLE_BLOCK));
-                        break;
-                }
-
-            }
-        }*/
 
         for (int i = 0; i < strings.length; i++) {
             String line = strings[i];
@@ -239,15 +227,16 @@ public class Game {
                 if (rand > 6) {
                     buffer.bonus.play();
                 }
-                int currentLevel = (int) (buffer.getY() / BLOCK_SIZE);
-                String line = level[currentLevel];
+                int currentLine = (int) (buffer.getY() / BLOCK_SIZE);
+                String line = level[currentLine];
                 char[] charline = line.toCharArray();
                 charline[(int) (buffer.getX() / BLOCK_SIZE)] = '0';
-                level[(int) (buffer.getLayoutY() / BLOCK_SIZE)] = String.valueOf(charline);
+                level[currentLine] = String.valueOf(charline);
                 //savings.LEVEL = level;
                 blocks.remove(buffer);
-                int your_score = Integer.parseInt(score.getText());
-                score.setText(Integer.toString(your_score + 1));
+                Score++;
+                // your_score = Integer.parseInt(score.getText());
+                score.setText(Integer.toString(Score));
             } else
                 i++;
         }
@@ -262,10 +251,12 @@ public class Game {
     /**
      * Method interaction with gamer
      */
-    private void update() {
+    private void update(long now) {
         gamePlaying();
+        //time = new Date();
         if (isPressed(KeyCode.ESCAPE)) {
             keys.clear();
+            records.last_time = now;
             timer.stop();//working!
             Main.SetWindow_Scene(Main.Menu_screen);
 
@@ -274,13 +265,21 @@ public class Game {
             System.out.println(running);
         }
         if (isPressed(KeyCode.LEFT)) {
+            //records.add(KeyCode.LEFT,time.getTime()-currentDate.getTime());
+            records.add(KeyCode.LEFT, now - records.first_time);
+            //records.last_time=now-records.first_time;
             player.moveLeft();
             player.update();
         } else if (isPressed(KeyCode.RIGHT)) {
+            //records.add(KeyCode.RIGHT,time.getTime()-currentDate.getTime());
+            records.add(KeyCode.RIGHT, now - records.first_time);
+            //records.last_time=now-records.first_time;
             player.moveRight();
             player.update();
-        } else
+        } else {
+
             player.stopMove();
+        }
 
     }
 
@@ -326,6 +325,8 @@ public class Game {
         }
         blocks.clear();
         level = savings.LEVEL;
+
+        //goToLevel();
         //Create_blocks(Level_data.levels[levelNumber]);
         Create_blocks(savings.LEVEL);
         /*int i = 0;
@@ -377,13 +378,16 @@ public class Game {
      */
     public void Game_Processing() {
         running = true;
-        System.out.println(running);
+        System.out.println(running + "main");
+        time = new Date();
         timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
                 try {
+                    if (records.first_time == 0)
+                        records.first_time = now;
                     Thread.sleep(10);
-                    update();
+                    update(now);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -434,6 +438,64 @@ public class Game {
             player.moveRight();
             player.update();
         }
+    }
+
+    private void updateReloading(long now) {
+        gamePlaying();
+        //time = new Date();
+        if (isPressed(KeyCode.ESCAPE)) {
+            timer.stop();//working!
+            Main.SetWindow_Scene(Main.Menu_screen);
+
+        }
+        if (records.last_time - records.first_time <= now - first_time) {
+            timer.stop();
+            /*try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }*/
+
+            //Game_Processing();
+            //return;
+        }
+        if (records.record.containsKey(now - first_time)) {
+            //if(records.record.get(time.getTime()-currentDate.getTime())==KeyCode.LEFT)
+            if (records.record.get(now - first_time) == KeyCode.LEFT) {
+                player.moveLeft();
+                player.update();
+            } else {
+                player.moveRight();
+                player.update();
+            }
+        }
+
+    }
+
+    public void reloadTheGame() {
+        running = true;
+        System.out.println(running + "reload");
+        //goToLevel(records.current_level);
+        //Date current_time = new Date();
+
+        //time = new Date();
+        //Timer timer1= new Timer();
+        //timer1.
+        timer = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                //try {
+                if (first_time == 0)
+                    first_time = now;
+                //Thread.sleep(10);
+                updateReloading(now);
+                //} catch (InterruptedException e) {
+                //    e.printStackTrace();
+                //}
+
+            }
+        };
+        timer.start();
     }
 }
 
