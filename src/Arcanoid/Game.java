@@ -1,6 +1,7 @@
 package Arcanoid;
 
 import Savings.GameRecord;
+import Savings.GameRecordElement;
 import Savings.GameSavings;
 import javafx.animation.AnimationTimer;
 import javafx.scene.Group;
@@ -256,7 +257,7 @@ public class Game {
         //time = new Date();
         if (isPressed(KeyCode.ESCAPE)) {
             keys.clear();
-            records.last_time = now;
+            //records.last_time = now;
             timer.stop();//working!
             Main.SetWindow_Scene(Main.Menu_screen);
 
@@ -266,13 +267,13 @@ public class Game {
         }
         if (isPressed(KeyCode.LEFT)) {
             //records.add(KeyCode.LEFT,time.getTime()-currentDate.getTime());
-            records.add(KeyCode.LEFT, now - records.first_time);
+            //records.add();
             //records.last_time=now-records.first_time;
             player.moveLeft();
             player.update();
         } else if (isPressed(KeyCode.RIGHT)) {
             //records.add(KeyCode.RIGHT,time.getTime()-currentDate.getTime());
-            records.add(KeyCode.RIGHT, now - records.first_time);
+            //records.add();
             //records.last_time=now-records.first_time;
             player.moveRight();
             player.update();
@@ -280,6 +281,7 @@ public class Game {
 
             player.stopMove();
         }
+        records.add();
 
     }
 
@@ -342,6 +344,16 @@ public class Game {
         //scrollBackgroundIV();
     }
 
+    private void loadRecord(GameRecord record, int i) {
+        GameRecordElement e = records.record.get(i);
+        ball.setTranslateX(e.ballX);
+        ball.setTranslateY(e.ballY);
+        ball.velocityX = e.ball_velocityX;
+        ball.velocityY = e.ball_velocityY;
+        player.setTranslateX(e.playerX);
+        player.setTranslateY(e.playerY);
+
+    }
     private boolean isPressed(KeyCode key) {
         return keys.getOrDefault(key, false);
     }
@@ -384,8 +396,8 @@ public class Game {
             @Override
             public void handle(long now) {
                 try {
-                    if (records.first_time == 0)
-                        records.first_time = now;
+                    //if (records.first_time == 0)
+                    //    records.first_time = now;
                     Thread.sleep(10);
                     update(now);
                 } catch (InterruptedException e) {
@@ -442,24 +454,7 @@ public class Game {
 
     private void updateReloading(long now) {
         gamePlaying();
-        //time = new Date();
-        if (isPressed(KeyCode.ESCAPE)) {
-            timer.stop();//working!
-            Main.SetWindow_Scene(Main.Menu_screen);
-
-        }
-        if (records.last_time - records.first_time <= now - first_time) {
-            timer.stop();
-            /*try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }*/
-
-            //Game_Processing();
-            //return;
-        }
-        if (records.record.containsKey(now - first_time)) {
+       /* if (records.record.containsKey(now - first_time)) {
             //if(records.record.get(time.getTime()-currentDate.getTime())==KeyCode.LEFT)
             if (records.record.get(now - first_time) == KeyCode.LEFT) {
                 player.moveLeft();
@@ -468,13 +463,25 @@ public class Game {
                 player.moveRight();
                 player.update();
             }
-        }
+        }*/
 
     }
 
     public void reloadTheGame() {
         running = true;
         System.out.println(running + "reload");
+        int i = 0;
+        while (i < blocks.size()) {
+            Block buffer = blocks.get(i);
+            buffer.setVisible(false);
+            gameRoot.getChildren().remove(buffer);
+            i++;
+        }
+        blocks.clear();
+        levelNumber = records.current_level;
+        //goToLevel();
+        Create_blocks(Level_data.levels[levelNumber]);
+        //Create_blocks(savings.LEVEL);
         //goToLevel(records.current_level);
         //Date current_time = new Date();
 
@@ -485,10 +492,11 @@ public class Game {
             @Override
             public void handle(long now) {
                 //try {
-                if (first_time == 0)
-                    first_time = now;
+                //if (first_time == 0)
+                first_time++;
+                loadRecord(records, (int) first_time);
                 //Thread.sleep(10);
-                updateReloading(now);
+                //updateReloading(now);
                 //} catch (InterruptedException e) {
                 //    e.printStackTrace();
                 //}

@@ -57,7 +57,7 @@ public class Main extends Application {
 
     public static LinkedList<Scores> playerScores = new LinkedList<>();
 
-    static Scene Game_screen, Menu_screen, Scores_screen;
+    public static Scene Game_screen, Menu_screen, Scores_screen;
     public static boolean reloading = false;
     static int levelsComplited;
 
@@ -124,8 +124,8 @@ public class Main extends Application {
             //MyGame.savings = new GameSavings(MyGame);
             //MyGame.savings.saveGame();
             //MyGame.records= new GameRecord();
-            if (Game.records.record.size() != 0)
-                Game.records.save();
+            //if (Game.records.record.size() != 0)
+            Game.records.save();
             System.exit(0);
         });
 
@@ -196,7 +196,7 @@ public class Main extends Application {
                 window.setScene(Game_screen);
                 if (reloading)
                     MyGame.reloadTheGame();
-                else if (!reloading && !autoPlay)
+                else if (!autoPlay)
                     MyGame.Game_Processing();
 				else
                     MyGame.AutoPlay();
@@ -371,8 +371,8 @@ public class Main extends Application {
 
     private void loadingScores() {
         //try {
-        FileInputStream fin = null;
-        ObjectInputStream ois = null;
+        FileInputStream fin;
+        ObjectInputStream ois;
         try {
             fin = new FileInputStream("Record.bin");
             ois = new ObjectInputStream(fin);
@@ -434,7 +434,7 @@ public class Main extends Application {
         primaryStage.show();
         Game.records.setChooseActionWindow(primaryStage);
         GameRecord s = Game.records.loadGame();
-        if (reloading == true) {
+        //if (reloading == true) {
             if (s != null) {
                 //reloading=true;
                 Game.records = s;
@@ -442,8 +442,9 @@ public class Main extends Application {
                 System.out.println("Can't reload");
                 reloading = false;
             }
-        }
+        // }
         Game_screen = MyGame.set_scene();
+
         /*GameSavings s = MyGame.savings.loadGame();
         Game_screen = MyGame.set_scene();
         if (s != null) {

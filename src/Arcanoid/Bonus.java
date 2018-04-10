@@ -14,7 +14,7 @@ import java.io.Serializable;
 
 public class Bonus extends Pane implements Serializable {
     private static final Image bonus = new Image("bonus.png");
-    public TranslateTransition translateTransition;
+    private TranslateTransition translateTransition;
     public Point2D playerVelocity = new Point2D(0, 0);
     private BONUS_TYPE type;
     private int width = 30;
@@ -80,12 +80,13 @@ public class Bonus extends Pane implements Serializable {
             if (testPaddleCollision()) {
                 parallelTransition.stop();
                 this.setVisible(false);
+                catchBonus();
                 isCatched = true;
             }
         });
     }
 
-    boolean isExist() {
+    private boolean isExist() {
         return this.type != BONUS_TYPE.NO_BONUS;
     }
 
@@ -100,20 +101,25 @@ public class Bonus extends Pane implements Serializable {
         }
     }
 
-    public void catchBonus() {
+    void catchBonus() {
         switch (type) {
             case FROZEN: {
-
+                Game.ball.velocityY *= 0.5;
+                Game.ball.velocityX *= 0.5;
                 //bonusIV.setVisible(false);
                 break;
             }
             case LIFE: {
+                Main.MyGame.Life++;
                 break;
             }
             case SPEED: {
+                Game.ball.velocityY += 0.5;
+                Game.ball.velocityX += 0.5;
                 break;
             }
             case LONG_PADDLE: {
+                Game.player.setWidth(100);
                 break;
             }
             case NO_BONUS: {
