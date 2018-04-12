@@ -19,7 +19,7 @@ public class Bonus extends Pane implements Serializable {
     private BONUS_TYPE type;
     private int width = 30;
     private int height = 30;
-    private boolean isCatched = false;
+    public boolean isCatched = false;
     private ImageView bonusIV = new ImageView(bonus);
     private ParallelTransition parallelTransition;
     private FramesAnimation animation;
@@ -80,7 +80,7 @@ public class Bonus extends Pane implements Serializable {
             if (testPaddleCollision()) {
                 parallelTransition.stop();
                 this.setVisible(false);
-                catchBonus();
+                //catchBonus();
                 isCatched = true;
             }
         });
@@ -101,8 +101,9 @@ public class Bonus extends Pane implements Serializable {
         }
     }
 
-    void catchBonus() {
-        switch (type) {
+   /* void catchBonus() {
+        isCatched=true;
+        /*switch (type) {
             case FROZEN: {
                 Game.ball.velocityY *= 0.5;
                 Game.ball.velocityX *= 0.5;
@@ -127,7 +128,7 @@ public class Bonus extends Pane implements Serializable {
                 break;
             }
         }
-    }
+    }*/
 
     enum BONUS_TYPE {FROZEN, LIFE, SPEED, LONG_PADDLE, NO_BONUS}
 

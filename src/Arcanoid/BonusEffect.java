@@ -5,7 +5,6 @@ public class BonusEffect {
     private int id, duration, type;
 
     public BonusEffect(int mId, int mType, int mDuration) {
-
         thread = new Thread();
         this.id = mId;
         this.type = mType;

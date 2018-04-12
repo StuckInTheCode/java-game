@@ -30,10 +30,13 @@ public class Game {
      */
     public GameSavings savings = new GameSavings();
     public static GameRecord records = new GameRecord();
+    private static final BonusManager bonusManager = new BonusManager();
+
     public static long first_time;
     public static String level[];
     //final Date currentDate = new Date();
     public static ArrayList<Block> blocks = new ArrayList<>();
+    public static ArrayList<Bonus> bonuses = new ArrayList<>();
     private HashMap<KeyCode, Boolean> keys = new HashMap<>();
 
     private static boolean running = false;
@@ -226,6 +229,7 @@ public class Game {
                 int rand = (int) (Math.random() * 10);
                 System.out.println(rand);
                 if (rand > 6) {
+                    bonuses.add(buffer.bonus);
                     buffer.bonus.play();
                 }
                 int currentLine = (int) (buffer.getY() / BLOCK_SIZE);
@@ -241,6 +245,10 @@ public class Game {
             } else
                 i++;
         }
+        for (Bonus e : bonuses)
+            if (e.isCatched)
+                bonusManager.addBuff(new BonusEffect(i, 1, 20000));
+        bonusManager.updateBuffs();
         if (ball.update(player))             //main redraw the ball
             decLife();
         if (ball.testBallNPaddleCollision()) {//special redraw the ball
