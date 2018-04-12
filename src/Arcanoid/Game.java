@@ -32,7 +32,7 @@ public class Game {
     public static GameRecord records = new GameRecord();
     public static long first_time;
     public static String level[];
-    final Date currentDate = new Date();
+    //final Date currentDate = new Date();
     public static ArrayList<Block> blocks = new ArrayList<>();
     private HashMap<KeyCode, Boolean> keys = new HashMap<>();
 
