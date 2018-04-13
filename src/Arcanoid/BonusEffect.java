@@ -21,8 +21,8 @@ public class BonusEffect {
     public void applyEffect(Game game) {
         switch (type) {
             case 1: {
-                Game.ball.velocityY *= 0.5;
-                Game.ball.velocityX *= 0.5;
+                Game.ball.velocityY -= 0.8;
+                Game.ball.velocityX -= 0.8;
                 //bonusIV.setVisible(false);
                 break;
             }
@@ -31,8 +31,8 @@ public class BonusEffect {
                 break;
             }
             case 3: {
-                Game.ball.velocityY += 0.5;
-                Game.ball.velocityX += 0.5;
+                Game.ball.setRadius(16);
+                //Game.ball.velocityX += 0.5;
                 break;
             }
             case 4: {
@@ -88,8 +88,8 @@ public class BonusEffect {
         //какие-то действия
         switch (type) {
             case 1: {
-                Game.ball.velocityY /= 0.5;
-                Game.ball.velocityX /= 0.5;
+                Game.ball.velocityY += 0.8;
+                Game.ball.velocityX += 0.8;
                 //bonusIV.setVisible(false);
                 break;
             }
@@ -97,8 +97,9 @@ public class BonusEffect {
                 break;
             }
             case 3: {
-                Game.ball.velocityY -= 0.5;
-                Game.ball.velocityX -= 0.5;
+                //Game.ball.velocityY -= 0.5;
+                //Game.ball.velocityX -= 0.5;
+                Game.ball.setRadius(8);
                 break;
             }
             case 4: {
