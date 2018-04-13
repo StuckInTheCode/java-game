@@ -26,6 +26,7 @@ public class BonusManager {
 
                 this.activeBuffs.put(buff.getId(), buff);
 
+                activeBuffs.get(buff.getId()).applyEffect(Main.MyGame);
                 //Buff.of(buff.getId()).applyBuffEffect(this.livingBase, this.world, buff);
             }
         } else {
@@ -34,13 +35,13 @@ public class BonusManager {
             this.activeBuffs.put(buff.getId(), buff);
 
             //Применяем эффект баффа.
-            // Buff.of(buff.getId()).applyBuffEffect(this.livingBase, this.world, buff);
+            activeBuffs.get(buff.getId()).applyEffect(Main.MyGame);
         }
     }
 
     private BonusEffect getActiveBuff(int id) {
-        BonusEffect effect = new BonusEffect(0, 0);
-        return effect;
+        //BonusEffect effect = new BonusEffect(, 0);
+        return activeBuffs.get(id);
     }
 
     //Удаляем бафф и его эффект. Нужен так же для внешнего удаления баффа с флагом isPersistent.
@@ -49,7 +50,7 @@ public class BonusManager {
         if (this.isBuffActive(buffId)) {
 
             BonusEffect activeBuff = this.getActiveBuff(buffId);
-
+            activeBuffs.get(buffId).removeEffect(Main.MyGame);
             //Buff.of(buffId).removeBuffEffect(this.livingBase, this.world, activeBuff);
 
             this.activeBuffs.remove(buffId);
@@ -77,6 +78,7 @@ public class BonusManager {
                     //Снимаем эффект.
                     //Buff.of(buffId).removeBuffEffect(this.livingBase, this.world, buff);
                     //Удаляем на сервере.
+                    buff.removeEffect(Main.MyGame);
                     buffsIterator.remove();
                 }
             }

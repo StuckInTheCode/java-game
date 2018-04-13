@@ -25,10 +25,7 @@ import static Arcanoid.Block.createBlock;
 public class Game {
     private static final double BALL_VELOCITY = 1;
     private static final int BLOCK_SIZE = 31;
-    /**
-     * Container for storing elements (blocks) for the current level
-     */
-    public GameSavings savings = new GameSavings();
+    public static Paddle player;
     public static GameRecord records = new GameRecord();
     private static final BonusManager bonusManager = new BonusManager();
 
@@ -43,9 +40,13 @@ public class Game {
     //public static boolean reloading = false;
 
     private static Image backgroundImg = new Image("java.png");
-    public int Score;
 
     public static Ball ball;
+    /**
+     * Container for storing elements (blocks) for the current level
+     */
+
+    public GameSavings savings = new GameSavings();
 
     /**
      * Containers of elements of the main node and game content
@@ -53,16 +54,20 @@ public class Game {
     private Pane appRoot = new Pane();
     public static Pane npsRoot = new Pane();
     private Pane gameRoot = new Pane();
-
-    private Text scorefield;
-    public Date time;
-    public int Life;
-    private Text lifefield;
-    private Text lives;
+    public int Score;
     /**
      * Main group of the scene
      */
     private Group root = new Group();
+    private Text score;
+    private Text scorefield;
+
+    public Date time;
+
+    public int Life;
+    private Text lifefield;
+    private Text lives;
+
     /**
      * Game scene
      */
@@ -70,12 +75,10 @@ public class Game {
     private ImageView backgroundIV;
     private AnimationTimer timer;
 
-    public static Paddle player;
 
     public static int levelNumber = 0;
-
     private int colvoOfLevels = 2;
-    private Text score;
+
 
     /**
      * Initialization content on the scene
@@ -245,9 +248,12 @@ public class Game {
             } else
                 i++;
         }
-        for (Bonus e : bonuses)
+        for (Bonus e : bonuses) {
             if (e.isCatched)
-                bonusManager.addBuff(new BonusEffect(i, 1, 20000));
+                bonusManager.addBuff(new BonusEffect(i, e.getType(), 50000));
+            if (e.isFallen)
+                bonuses.remove(e);
+        }
         bonusManager.updateBuffs();
         if (ball.update(player))             //main redraw the ball
             decLife();

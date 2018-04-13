@@ -16,10 +16,11 @@ public class Bonus extends Pane implements Serializable {
     private static final Image bonus = new Image("bonus.png");
     private TranslateTransition translateTransition;
     public Point2D playerVelocity = new Point2D(0, 0);
-    private BONUS_TYPE type;
+    public final BONUS_TYPE type;
     private int width = 30;
     private int height = 30;
     public boolean isCatched = false;
+    public boolean isFallen = false;
     private ImageView bonusIV = new ImageView(bonus);
     private ParallelTransition parallelTransition;
     private FramesAnimation animation;
@@ -84,6 +85,11 @@ public class Bonus extends Pane implements Serializable {
                 isCatched = true;
             }
         });
+        translateTransition.toYProperty().addListener((observable, oldValue, newValue) -> {
+            if (translateTransition.getToY() == 600) {
+                isFallen = true;
+            }
+        });
     }
 
     private boolean isExist() {
@@ -130,6 +136,26 @@ public class Bonus extends Pane implements Serializable {
         }
     }*/
 
+    public int getType() {
+        switch (type) {
+            case FROZEN: {
+                return 1;
+            }
+            case LIFE: {
+                return 2;
+            }
+            case SPEED: {
+                return 3;
+            }
+            case LONG_PADDLE: {
+                return 4;
+            }
+            case NO_BONUS: {
+                return 0;
+            }
+        }
+        return 0;
+    }
     enum BONUS_TYPE {FROZEN, LIFE, SPEED, LONG_PADDLE, NO_BONUS}
 
 }
