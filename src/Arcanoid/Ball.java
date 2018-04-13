@@ -39,7 +39,7 @@ public class Ball extends Circle implements Serializable {
         this.setFill(Color.CORAL);
     }
 
-    private boolean testBlockNBallCollision() {
+    boolean testBlockNBallCollision() {
         boolean collision = false;
         for (Block block : Game.blocks) {
 

@@ -106,8 +106,8 @@ public class Block extends Rectangle {
             }
         }
         Game.blocks.add(block);
-        Game.npsRoot.getChildren().add(block);
         Game.npsRoot.getChildren().add(block.bonus);
+        Game.npsRoot.getChildren().add(block);
         return block;
     }
 	boolean isDestroyed()

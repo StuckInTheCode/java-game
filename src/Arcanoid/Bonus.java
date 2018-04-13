@@ -41,25 +41,25 @@ public class Bonus extends Pane implements Serializable {
         switch(type)
         {
             case FROZEN: {
-                bonusIV.setY(y);
+                //bonusIV.setY(y);
                 //bonusIV.setVisible(false);
                 animation = new FramesAnimation(bonusIV, Duration.millis(200),2,1,0,0,width,height);
                 break;
             }
             case LIFE:
             {
-                bonusIV.setY(y - 30);
+                // bonusIV.setY(y - 30);
                 animation = new FramesAnimation(bonusIV, Duration.millis(200), 2, 1, 30, 0, width, height);
                 break;
             }
             case SPEED:
             {
-                bonusIV.setY(y - 60);
+                // bonusIV.setY(y - 60);
                 animation = new FramesAnimation(bonusIV, Duration.millis(200), 2, 1, 60, 0, width, height);
                 break;
             }
             case LONG_PADDLE: {
-                bonusIV.setY(y - 90);
+                // bonusIV.setY(y - 90);
                 animation = new FramesAnimation(bonusIV, Duration.millis(200), 2, 1, 90, 0, width, height);
                 break;
             }

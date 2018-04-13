@@ -7,6 +7,7 @@ import javafx.animation.AnimationTimer;
 import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -237,10 +238,10 @@ public class Game {
                 buffer.setVisible(false);
                 int rand = (int) (Math.random() * 10);
                 //System.out.println(rand);
-                if (rand > 6) {
+                //if (rand > 6) {
                     bonuses.add(buffer.bonus);
                     buffer.bonus.play();
-                }
+                //}
                 int currentLine = (int) (buffer.getY() / BLOCK_SIZE);
                 String line = level[currentLine];
                 char[] charline = line.toCharArray();
@@ -292,9 +293,6 @@ public class Game {
             Main.SetWindow_Scene(Main.Menu_screen);
 
         }
-        if (isPressed(KeyCode.PAUSE)) {
-            System.out.println(running);
-        }
         if (isPressed(KeyCode.LEFT)) {
             //records.add(KeyCode.LEFT,time.getTime()-currentDate.getTime());
             //records.add();
@@ -323,6 +321,7 @@ public class Game {
         ball.goToStartPosition();
         score.setText("0");
         lives.setText("5");
+        Score = 0;
         Life = 5;
         int i = 0;
         while (i < blocks.size()) {
@@ -365,24 +364,28 @@ public class Game {
         }
         blocks.clear();
         level = savings.LEVEL;
-
-        //goToLevel();
-        //Create_blocks(Level_data.levels[levelNumber]);
         Create_blocks(savings.LEVEL);
-        /*int i = 0;
-        while (i < blocks.size()) {
-            Block buffer = blocks.get(i);
-            buffer.setVisible(false);
-            gameRoot.getChildren().remove(buffer);
-            i++;
-        }*/
-        //blocks.clear();
-        //blocks=savings.blocks;
-        //Create_blocks(Level_data.levels[levelNumber]);
-        //scrollBackgroundIV();
     }
 
     private boolean loadRecord(GameRecord record, int i) {
+        if (i <= records.record.size()) {
+            GameRecordElement e = records.record.get(i);
+            //ball.testBlockNBallCollision();
+            //ball.setTranslateX(e.ballX);
+            //ball.setTranslateY(e.ballY);
+            if (ball.update(player))             //main redraw the ball
+                decLife();
+            ball.velocityX = e.ball_velocityX;
+            ball.velocityY = e.ball_velocityY;
+            player.setTranslateX(e.playerX);
+            player.setTranslateY(e.playerY);
+            return true;
+        } else
+            return false;
+
+    }
+
+    private boolean replayRecord(GameRecord record, int i) {
         if (i <= records.record.size()) {
             GameRecordElement e = records.record.get(i);
             ball.setTranslateX(e.ballX);
@@ -391,6 +394,7 @@ public class Game {
             ball.velocityY = e.ball_velocityY;
             player.setTranslateX(e.playerX);
             player.setTranslateY(e.playerY);
+            gamePlaying();
             return true;
         } else
             return false;
@@ -441,8 +445,6 @@ public class Game {
             @Override
             public void handle(long now) {
                 try {
-                    //if (records.first_time == 0)
-                    //    records.first_time = now;
                     Thread.sleep(10);
                     update(now);
                 } catch (InterruptedException e) {
@@ -497,24 +499,9 @@ public class Game {
         }
     }
 
-    private void updateReloading(long now) {
-        gamePlaying();
-       /* if (records.record.containsKey(now - first_time)) {
-            //if(records.record.get(time.getTime()-currentDate.getTime())==KeyCode.LEFT)
-            if (records.record.get(now - first_time) == KeyCode.LEFT) {
-                player.moveLeft();
-                player.update();
-            } else {
-                player.moveRight();
-                player.update();
-            }
-        }*/
-
-    }
-
     public void reloadTheGame() {
         running = true;
-        System.out.println(running + "reload");
+        System.out.println(running + " reload");
         int i = 0;
         while (i < blocks.size()) {
             Block buffer = blocks.get(i);
@@ -524,36 +511,40 @@ public class Game {
         }
         blocks.clear();
         levelNumber = records.current_level;
-        //goToLevel();
         Create_blocks(Level_data.levels[levelNumber]);
-        //Create_blocks(savings.LEVEL);
-        //goToLevel(records.current_level);
-        //Date current_time = new Date();
-
-        //time = new Date();
-        //Timer timer1= new Timer();
-        //timer1.
         timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                //try {
-                //if (first_time == 0)
-                gamePlaying();
                 record_time++;
                 if (!loadRecord(records, (int) record_time)) {
                     this.stop();
+                    Messange("Last reload ends. Now you can play!");
+                    Main.reloading = false;
                     Game_Processing();
                     return;
                 }
-                //Thread.sleep(10);
-                //updateReloading(now);
-                //} catch (InterruptedException e) {
-                //    e.printStackTrace();
-                //}
-
+                gamePlaying();
             }
         };
         timer.start();
+        //Messange("Last reload ends. Now you can play!");
+
+
+    }
+
+    private void Messange(String s) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Information");
+        alert.setHeaderText(null);
+        alert.setContentText(s);
+        alert.show();
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        alert.close();
+        //alert.showAndWait();
     }
 }
 
