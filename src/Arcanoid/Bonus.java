@@ -35,29 +35,31 @@ public class Bonus extends Pane implements Serializable {
         translateTransition.setCycleCount(1);
         bonusIV.setViewport(new Rectangle2D(0, 0, width, height));
         bonusIV.setX(x);
-        bonusIV.setY(y);
+        //bonusIV.setY(y);
         //bonusIV.setFitWidth(30);
         //bonusIV.setFitHeight(30);
         switch(type)
         {
             case FROZEN: {
-
-
+                bonusIV.setY(y);
                 //bonusIV.setVisible(false);
                 animation = new FramesAnimation(bonusIV, Duration.millis(200),2,1,0,0,width,height);
                 break;
             }
             case LIFE:
             {
+                bonusIV.setY(y - 30);
                 animation = new FramesAnimation(bonusIV, Duration.millis(200), 2, 1, 30, 0, width, height);
                 break;
             }
             case SPEED:
             {
+                bonusIV.setY(y - 60);
                 animation = new FramesAnimation(bonusIV, Duration.millis(200), 2, 1, 60, 0, width, height);
                 break;
             }
             case LONG_PADDLE: {
+                bonusIV.setY(y - 90);
                 animation = new FramesAnimation(bonusIV, Duration.millis(200), 2, 1, 90, 0, width, height);
                 break;
             }
@@ -107,6 +109,11 @@ public class Bonus extends Pane implements Serializable {
         }
     }
 
+    public void pause() {
+        if (this.isExist()) {
+            this.parallelTransition.pause();
+        }
+    }
    /* void catchBonus() {
         isCatched=true;
         /*switch (type) {

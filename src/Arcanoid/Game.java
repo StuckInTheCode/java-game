@@ -29,7 +29,7 @@ public class Game {
     public static GameRecord records = new GameRecord();
     private static final BonusManager bonusManager = new BonusManager();
 
-    public static long first_time;
+    private static long record_time;
     public static String level[];
     //final Date currentDate = new Date();
     public static ArrayList<Block> blocks = new ArrayList<>();
@@ -67,7 +67,8 @@ public class Game {
     public int Life;
     private Text lifefield;
     private Text lives;
-
+    public Text bufftime;
+    private Text buffduration;
     /**
      * Game scene
      */
@@ -78,7 +79,6 @@ public class Game {
 
     public static int levelNumber = 0;
     private int colvoOfLevels = 2;
-
 
     /**
      * Initialization content on the scene
@@ -101,6 +101,12 @@ public class Game {
         score.setX(760);
         score.setY(50);
         lifefield = new Text("Your life:");
+        buffduration = new Text("Buff ends in:");
+        bufftime = new Text("-:-");
+        buffduration.setX(50);
+        buffduration.setY(65);
+        bufftime.setX(50);
+        bufftime.setY(80);
         //lifefield.setFont();
         lifefield.setX(700);
         lifefield.setY(65);
@@ -114,7 +120,7 @@ public class Game {
         gameRoot.getChildren().add(player);
         appRoot.setPrefSize(800, 600);
         appRoot.setMaxSize(800, 600);
-        appRoot.getChildren().addAll(backgroundIV, scorefield, score, lifefield, lives, gameRoot, npsRoot);
+        appRoot.getChildren().addAll(backgroundIV, scorefield, score, lifefield, lives, buffduration, bufftime, gameRoot, npsRoot);
         return appRoot;
     }
 
@@ -212,7 +218,6 @@ public class Game {
         //scrollBackgroundIV();
         int i = 0;
         if (Life == 0) {
-            timer.stop();
             Scores s = new Scores("player", Integer.parseInt(score.getText()));
             Main.playerScores.add(s);
             ScoreTableItem e = new ScoreTableItem(s, Main.playerScores.size());
@@ -220,6 +225,7 @@ public class Game {
             restart();
             keys.clear();
             running = false;
+            timer.stop();
             Main.SetWindow_Scene(Main.Menu_screen);
         }
         if (blocks.size() == 0) {           //checking wining
@@ -230,7 +236,7 @@ public class Game {
             if (buffer.isDestroyed()) {     //checking blocks are destroyed
                 buffer.setVisible(false);
                 int rand = (int) (Math.random() * 10);
-                System.out.println(rand);
+                //System.out.println(rand);
                 if (rand > 6) {
                     bonuses.add(buffer.bonus);
                     buffer.bonus.play();
@@ -249,17 +255,19 @@ public class Game {
                 i++;
         }
         for (Bonus e : bonuses) {
-            if (e.isCatched)
-                bonusManager.addBuff(new BonusEffect(i, e.getType(), 50000));
+            if (e.isCatched) {
+                bonusManager.addBuff(new BonusEffect(e.getType(), 2000));
+                bonuses.remove(e);
+            }
             if (e.isFallen)
                 bonuses.remove(e);
         }
         bonusManager.updateBuffs();
-        if (ball.update(player))             //main redraw the ball
+        /*if (ball.update(player))             //main redraw the ball
             decLife();
         if (ball.testBallNPaddleCollision()) {//special redraw the ball
             ball.intersectWithPaddle();
-        }
+        }*/
 
     }
 
@@ -268,9 +276,17 @@ public class Game {
      */
     private void update(long now) {
         gamePlaying();
+        if (ball.update(player))             //main redraw the ball
+            decLife();
+        if (ball.testBallNPaddleCollision()) {//special redraw the ball
+            ball.intersectWithPaddle();
+        }
         //time = new Date();
         if (isPressed(KeyCode.ESCAPE)) {
             keys.clear();
+            for (Bonus e : bonuses) {
+                e.pause();
+            }
             //records.last_time = now;
             timer.stop();//working!
             Main.SetWindow_Scene(Main.Menu_screen);
@@ -303,8 +319,8 @@ public class Game {
      * Restarting the game
      */
     public void restart() {
-        ball.goToStartPosition();
         player.goToStartPosition();
+        ball.goToStartPosition();
         score.setText("0");
         lives.setText("5");
         Life = 5;
@@ -316,8 +332,16 @@ public class Game {
             i++;
         }
         blocks.clear();
+        for (Bonus e : bonuses) {
+            e.setVisible(false);
+            gameRoot.getChildren().remove(e);
+        }
+        bonuses.clear();
+        bonusManager.removeAll();
+        //Create_blocks(Level_data.levels[levelNumber]);
+        //levelNumber=0;
         Create_blocks(Level_data.levels[levelNumber]);
-        scrollBackgroundIV();
+        //scrollBackgroundIV();
     }
 
     public void loadSavings(GameSavings savings) {
@@ -358,14 +382,18 @@ public class Game {
         //scrollBackgroundIV();
     }
 
-    private void loadRecord(GameRecord record, int i) {
-        GameRecordElement e = records.record.get(i);
-        ball.setTranslateX(e.ballX);
-        ball.setTranslateY(e.ballY);
-        ball.velocityX = e.ball_velocityX;
-        ball.velocityY = e.ball_velocityY;
-        player.setTranslateX(e.playerX);
-        player.setTranslateY(e.playerY);
+    private boolean loadRecord(GameRecord record, int i) {
+        if (i <= records.record.size()) {
+            GameRecordElement e = records.record.get(i);
+            ball.setTranslateX(e.ballX);
+            ball.setTranslateY(e.ballY);
+            ball.velocityX = e.ball_velocityX;
+            ball.velocityY = e.ball_velocityY;
+            player.setTranslateX(e.playerX);
+            player.setTranslateY(e.playerY);
+            return true;
+        } else
+            return false;
 
     }
     private boolean isPressed(KeyCode key) {
@@ -395,7 +423,7 @@ public class Game {
     private void decLife() {
         Life--;
         ball.goToStartPosition();
-        player.goToStartPosition();
+        //player.goToStartPosition();
         lives.setText(Integer.toString(Life));
     }
 
@@ -404,8 +432,11 @@ public class Game {
      */
     public void Game_Processing() {
         running = true;
-        System.out.println(running + "main");
-        time = new Date();
+        System.out.println(running + " main");
+        for (Bonus e : bonuses) {
+            e.play();
+        }
+        //time = new Date();
         timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
@@ -507,8 +538,13 @@ public class Game {
             public void handle(long now) {
                 //try {
                 //if (first_time == 0)
-                first_time++;
-                loadRecord(records, (int) first_time);
+                gamePlaying();
+                record_time++;
+                if (!loadRecord(records, (int) record_time)) {
+                    this.stop();
+                    Game_Processing();
+                    return;
+                }
                 //Thread.sleep(10);
                 //updateReloading(now);
                 //} catch (InterruptedException e) {

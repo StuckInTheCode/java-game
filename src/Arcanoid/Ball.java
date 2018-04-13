@@ -28,11 +28,6 @@ public class Ball extends Circle implements Serializable {
         this.setCenterX(x);
         this.setCenterY(y);
         this.setRadius(8);
-        /*this.top=new Point2D(x,y+8);
-        this.bottom=new Point2D(x,y-8);
-        this.left=new Point2D(x-8,y);
-        this.right=new Point2D(x+8,y);
-        this.center= new Point2D(x,y);*/
         this.translateXProperty().addListener((observable, oldValue, newValue) -> {
             if (testBlockNBallCollision())
                 changeDirectionX();
@@ -51,9 +46,6 @@ public class Ball extends Circle implements Serializable {
             if (block.getBoundsInParent().intersects(this.getBoundsInParent())) {
                 collision = true;
                 block.destroyed = true;
-                //block.Delete();
-                //block.setVisible(false);
-                //Game.blocks.remove(block);
                 break;
             }
         }
@@ -85,38 +77,8 @@ public class Ball extends Circle implements Serializable {
     }
     boolean update(Paddle paddle) {
         boolean ball_fall=false;
-       /* int newX = (int)(this.getTranslateX() + velocityX * 5);
-        int oldX = (int)this.getTranslateX();
-        int oldY = (int)(this.getTranslateY());
-        int newY = (int)(this.getTranslateY() + velocityY * 5);
-        Point2D velocity=new Point2D(velocityX * 5,velocityY * 5);
-        int dist = (int)velocity.distance(0,0);
-
-        for( int i=0;i<dist;i++) {
-            this.setTranslateX(oldX++);
-            this.setTranslateY(oldY++);
-        }*/
-
         this.moveX();
         this.moveY();
-
-        /*this.top= new Point2D (this.getCenterX()+newX,this.getCenterY()+newY+8);
-        this.bottom= new Point2D (this.getCenterX()+newX,this.getCenterY()+newY-8);
-        this.left= new Point2D (this.getCenterX()+newX-8,this.getCenterY()+newY);
-        this.right= new Point2D (this.getCenterX()+newX+8,this.getCenterY()+newY);
-        this.center= new Point2D (this.getCenterX()+newX,this.getCenterY()+newY);*/
-
-        /*if (this.getCenterX()+this.getTranslateX()<= 0)
-            velocityX = BALL_VELOCITY;
-        else if (this.getCenterX()+this.getTranslateX() >= SCREEN_WIDTH)
-            velocityX = -BALL_VELOCITY;
-        if (this.getCenterY()+this.getTranslateY() <= 0) {
-            velocityY = BALL_VELOCITY;
-        } else if (this.getCenterY()+this.getTranslateY() >= SCREEN_HEIGHT) {
-            velocityY = -BALL_VELOCITY;
-            this.setTranslateX(0);
-            this.setTranslateY(0);
-        }*/
         if(paddle.isMoving() && !this.isMoving())
             starting();
         if (this.getCenterX()+this.getTranslateX()<= 0)
@@ -142,10 +104,6 @@ public class Ball extends Circle implements Serializable {
         for (int i = 0; i < Math.abs(distance); i++) {
 
             this.setTranslateY(oldY + step);
-            // if (testBlockNBallCollision()) {
-            //     changeDirectionY();
-            //return;
-            // }
             diraction = velocityY > 0;
             if (diraction)
                 step++;
@@ -173,32 +131,6 @@ public class Ball extends Circle implements Serializable {
                 step--;
         }
     }
-
-   /* private void move(int x, int y)
-    {
-        int distanceX = (int)this.velocityX*5;
-        boolean diractionX= distanceX>0;
-        int distanceY = (int)this.velocityY*5;
-        boolean diractionY= distanceY>0;
-        double oldX=this.getTranslateX();
-        double oldY=this.getTranslateY();
-        double step = distanceX>distanceY?(double)distanceY/distanceX:(double)distanceX/distanceY;
-        int X=0;
-        int Y=0;
-        //for(int i=0;i<Math.abs(distance);i++){
-            this.setTranslateX(oldX+X);
-            this.setTranslateY(oldY+Y);
-            if (testBlockNBallCollision()) {
-                changeDirection();
-                //return;
-            }
-            X=diractionX?X+1:X-1;
-            Y=diractionY?Y+1:Y-1;
-            //else
-            //    step--;
-       // }
-    }*/
-
     private void changeDirection() {
     }
 
@@ -206,6 +138,7 @@ public class Ball extends Circle implements Serializable {
         this.velocityX = this.velocityX + 0.2;
         this.velocityY = this.velocityY + 0.2;
     }
+
     boolean isMoveLeft() {
         return this.velocityX < 0;
     }
@@ -219,8 +152,8 @@ public class Ball extends Circle implements Serializable {
     }
     void goToStartPosition()
     {
-        this.setTranslateX(0);
-        this.setTranslateY(0);
+        this.setTranslateX(Game.player.getTranslateX());//+(Game.player.getWidth()/2));
+        this.setTranslateY(8 - this.getRadius());
         this.velocityX=0;
         this.velocityY=0;
     }
@@ -229,7 +162,7 @@ public class Ball extends Circle implements Serializable {
      * Start moving the ball
      */
     private void starting() {
-        velocityX=BALL_VELOCITY;
+        velocityX = Game.player.isMoveRight() ? BALL_VELOCITY : -BALL_VELOCITY;
         velocityY=-BALL_VELOCITY;
     }
 

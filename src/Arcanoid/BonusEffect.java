@@ -2,27 +2,33 @@ package Arcanoid;
 
 public class BonusEffect {
     Thread thread;// cоздать поток, общающийся с родительским потоком через класс-менеджер, уничтожающийся по времени
-    private int id, duration, type;
-
-    public BonusEffect(int mId, int mType, int mDuration) {
+    private int id, duration;//, type;
+    //private boolean isPersistent;
+    /*public BonusEffect(int mId, int mType, int mDuration) {
         thread = new Thread();
         this.id = mId;
         this.type = mType;
         this.duration = mDuration;
-    }
+    }*/
 
     public BonusEffect(int buffId, int buffDuration) {
         thread = new Thread();
         this.id = buffId;
-        this.type = 0;
+        //switch (id) {
+        //    case 2: {
+
+        //        break;
+        //    }
+        //}
         this.duration = buffDuration;
     }
 
     public void applyEffect(Game game) {
-        switch (type) {
+        thread.start();
+        switch (id) {
             case 1: {
-                Game.ball.velocityY -= 0.8;
-                Game.ball.velocityX -= 0.8;
+                Game.player.setVelocity(2.0);
+                //Game.ball.velocityX -= 0.8;
                 //bonusIV.setVisible(false);
                 break;
             }
@@ -43,7 +49,7 @@ public class BonusEffect {
                 break;
             }
         }
-        thread.start();
+
         //какие-то действия
     }
     //Геттеры свойств.
@@ -53,6 +59,7 @@ public class BonusEffect {
 
         if (this.duration > 0) {
             this.duration--;
+            System.out.println(this.duration);
         }
 
         //true - время действия ещё не истекло, false - истекло, удаляем бафф.
@@ -63,7 +70,7 @@ public class BonusEffect {
     public void combineBuffs(BonusEffect buff) {
 
         //Обновляем время действия только если новый бафф будет активен дольше.
-        if (buff.duration > this.duration && this.type == buff.type) {
+        if (buff.duration > this.duration) {
             this.duration = buff.duration;
             //buff.stopEffect();
         }
@@ -79,17 +86,23 @@ public class BonusEffect {
         return this.duration;
     }
 
-    public int getType() {
+    /*public boolean isPersistent() {
+
+        return this.isPersistent;
+    }*/
+
+    /*public int getType() {
 
         return this.type;
-    }
+    }*/
 
     public void removeEffect(Game game) {
         //какие-то действия
-        switch (type) {
+        switch (id) {
             case 1: {
-                Game.ball.velocityY += 0.8;
-                Game.ball.velocityX += 0.8;
+                Game.player.setVelocity(1.0);
+                //Game.ball.velocityY += 0.8;
+                //Game.ball.velocityX += 0.8;
                 //bonusIV.setVisible(false);
                 break;
             }
@@ -110,6 +123,6 @@ public class BonusEffect {
                 break;
             }
         }
-        thread.interrupt();
+        //thread.interrupt();
     }
 }
