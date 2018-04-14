@@ -196,10 +196,13 @@ public class Main extends Application {
                 window.setScene(Game_screen);
                 if (reloading)
                     MyGame.reloadTheGame();
-                else if (!autoPlay)
+                else if (!autoPlay) {
                     MyGame.Game_Processing();
-				else
+                    Game.records = new GameRecord();
+                } else {
                     MyGame.AutoPlay();
+                    Game.records = new GameRecord();
+                }
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -432,11 +435,13 @@ public class Main extends Application {
 
         primaryStage.setScene(Menu_screen);
         primaryStage.show();
-        Game.records.setChooseActionWindow(primaryStage);
+        //Game.records.setChooseActionWindow(primaryStage);
         GameRecord s = Game.records.loadGame();
         //if (reloading == true) {
             if (s != null) {
                 //reloading=true;
+                Game.records.setChooseActionWindow(primaryStage);
+                //if(reloading)
                 Game.records = s;
             } else {
                 System.out.println("Can't reload");

@@ -12,6 +12,9 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
 import java.util.ArrayList;
@@ -24,6 +27,7 @@ import static Arcanoid.Block.createBlock;
  * Class, that contains main game mechanic
  */
 public class Game {
+    private static final Font FONT = Font.font("Arial", FontWeight.BOLD, 20);
     private static final double BALL_VELOCITY = 1;
     private static final int BLOCK_SIZE = 31;
     public static Paddle player;
@@ -96,24 +100,43 @@ public class Game {
         //savings.LEVEL=Level_data.levels[levelNumber];
         backgroundIV.setLayoutY(-(600 * (3)));
         scorefield = new Text("Your score:");
-        scorefield.setX(700);
-        scorefield.setY(50);
+        scorefield.setFont(FONT);
+        scorefield.setX(650);
+        scorefield.setY(40);
+
         score = new Text("0");
-        score.setX(760);
-        score.setY(50);
+        score.setFont(FONT);
+        score.setX(650);
+        score.setY(55);
+
         lifefield = new Text("Your life:");
         buffduration = new Text("Buff ends in:");
+
         bufftime = new Text("-:-");
-        buffduration.setX(50);
-        buffduration.setY(65);
-        bufftime.setX(50);
-        bufftime.setY(80);
-        //lifefield.setFont();
-        lifefield.setX(700);
-        lifefield.setY(65);
+        buffduration.setFont(FONT);
+        buffduration.setX(40);
+        buffduration.setY(55);
+
+        bufftime.setFont(FONT);
+        bufftime.setX(40);
+        bufftime.setY(67);
+
+        lifefield.setFont(FONT);
+        lifefield.setX(650);
+        lifefield.setY(80);
+
         lives = new Text("3");
-        lives.setX(760);
-        lives.setY(65);
+        lives.setFont(FONT);
+        lives.setX(650);
+        lives.setY(95);
+
+        scorefield.setFill(Color.GREY);
+        score.setFill(Color.GREY);
+        lifefield.setFill(Color.GREY);
+        buffduration.setFill(Color.GREY);
+        bufftime.setFill(Color.GREY);
+        lives.setFill(Color.GREY);
+
         Life = 5;
         player = new Paddle(360, 500);
         ball = new Ball(400, 490);
@@ -138,16 +161,8 @@ public class Game {
     }
 
     private void goToNewLevel() {
-        if (levelNumber < colvoOfLevels) {
-            levelNumber++;
-            //scrollBackgroundIV();
-            backgroundIV.setLayoutY(-600 * (3 - levelNumber));
-            Create_blocks(Level_data.levels[levelNumber]);
-        } else {
-            levelNumber = 0;
-            Main.SetWindow_Scene(Main.Menu_screen);
-        }
-
+        levelNumber++;
+        restart();
     }
 
     private void goToLevel(int levelNum) {
@@ -211,7 +226,6 @@ public class Game {
      * Main process, that checks updates and call the redrawing methods
      */
     private void gamePlaying() {
-        //scrollBackgroundIV();
         int i = 0;
         if (Life == 0) {
             Scores s = new Scores("player", Integer.parseInt(score.getText()));
@@ -245,7 +259,6 @@ public class Game {
                 //savings.LEVEL = level;
                 blocks.remove(buffer);
                 Score++;
-                // your_score = Integer.parseInt(score.getText());
                 score.setText(Integer.toString(Score));
             } else
                 i++;
@@ -259,11 +272,11 @@ public class Game {
                 bonuses.remove(e);
         }
         bonusManager.updateBuffs();
-        /*if (ball.update(player))             //main redraw the ball
+        if (ball.update(player))             //main redraw the ball
             decLife();
         if (ball.testBallNPaddleCollision()) {//special redraw the ball
             ball.intersectWithPaddle();
-        }*/
+        }
 
     }
 
@@ -272,32 +285,19 @@ public class Game {
      */
     private void update(long now) {
         gamePlaying();
-        if (ball.update(player))             //main redraw the ball
-            decLife();
-        if (ball.testBallNPaddleCollision()) {//special redraw the ball
-            ball.intersectWithPaddle();
-        }
-        //time = new Date();
         if (isPressed(KeyCode.ESCAPE)) {
             keys.clear();
             for (Bonus e : bonuses) {
                 e.pause();
             }
-            //records.last_time = now;
             timer.stop();//working!
             Main.SetWindow_Scene(Main.Menu_screen);
 
         }
         if (isPressed(KeyCode.LEFT)) {
-            //records.add(KeyCode.LEFT,time.getTime()-currentDate.getTime());
-            //records.add();
-            //records.last_time=now-records.first_time;
             player.moveLeft();
             player.update();
         } else if (isPressed(KeyCode.RIGHT)) {
-            //records.add(KeyCode.RIGHT,time.getTime()-currentDate.getTime());
-            //records.add();
-            //records.last_time=now-records.first_time;
             player.moveRight();
             player.update();
         } else {
@@ -319,28 +319,12 @@ public class Game {
         Score = 0;
         Life = 5;
         goToLevel(levelNumber);
-        /*int i = 0;
-        while (i < blocks.size()) {
-            Block buffer = blocks.get(i);
-            buffer.setVisible(false);
-            gameRoot.getChildren().remove(buffer);
-            i++;
-        }*/
-        /*for (Block e : blocks) {
-            e.setVisible(false);
-            gameRoot.getChildren().remove(e);
-        }
-        blocks.clear();*/
         for (Bonus e : bonuses) {
             e.setVisible(false);
             gameRoot.getChildren().remove(e);
         }
         bonuses.clear();
         bonusManager.removeAll();
-        //Create_blocks(Level_data.levels[levelNumber]);
-        //levelNumber=0;
-        //Create_blocks(Level_data.levels[levelNumber]);
-        //scrollBackgroundIV();
     }
 
     /*public void loadSavings(GameSavings savings) {
@@ -370,11 +354,6 @@ public class Game {
     private boolean loadRecord(GameRecord record, int i) {
         if (i <= records.record.size()) {
             GameRecordElement e = records.record.get(i);
-            //ball.testBlockNBallCollision();
-            //ball.setTranslateX(e.ballX);
-            //ball.setTranslateY(e.ballY);
-            if (ball.update(player))             //main redraw the ball
-                decLife();
             ball.velocityX = e.ball_velocityX;
             ball.velocityY = e.ball_velocityY;
             player.setTranslateX(e.playerX);
@@ -394,7 +373,7 @@ public class Game {
             ball.velocityY = e.ball_velocityY;
             player.setTranslateX(e.playerX);
             player.setTranslateY(e.playerY);
-            gamePlaying();
+            //gamePlaying();
             return true;
         } else
             return false;
@@ -427,7 +406,6 @@ public class Game {
     private void decLife() {
         Life--;
         ball.goToStartPosition();
-        //player.goToStartPosition();
         lives.setText(Integer.toString(Life));
     }
 
@@ -459,6 +437,9 @@ public class Game {
     public void AutoPlay() {
         running = true;
         player.setVelocity(Ball.BALL_VELOCITY);
+        for (Bonus e : bonuses) {
+            e.play();
+        }
         timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
@@ -502,16 +483,8 @@ public class Game {
     public void reloadTheGame() {
         running = true;
         System.out.println(running + " reload");
-        int i = 0;
-        while (i < blocks.size()) {
-            Block buffer = blocks.get(i);
-            buffer.setVisible(false);
-            gameRoot.getChildren().remove(buffer);
-            i++;
-        }
-        blocks.clear();
         levelNumber = records.current_level;
-        Create_blocks(Level_data.levels[levelNumber]);
+        goToLevel(levelNumber);
         timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
@@ -520,6 +493,7 @@ public class Game {
                     this.stop();
                     Messange("Last reload ends. Now you can play!");
                     Main.reloading = false;
+                    //Game.records = new GameRecord();
                     Game_Processing();
                     return;
                 }
