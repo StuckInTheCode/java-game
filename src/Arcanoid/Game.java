@@ -31,7 +31,7 @@ public class Game {
     private static final BonusManager bonusManager = new BonusManager();
 
     private static long record_time;
-    public static String level[];
+    //public static String level[];
     //final Date currentDate = new Date();
     public static ArrayList<Block> blocks = new ArrayList<>();
     public static ArrayList<Bonus> bonuses = new ArrayList<>();
@@ -92,7 +92,7 @@ public class Game {
         backgroundIV.setFitWidth(26 * BLOCK_SIZE);
         System.out.println(levelNumber);
         Create_blocks(Level_data.levels[levelNumber]);
-        level = Level_data.levels[levelNumber];
+        //level = Level_data.levels[levelNumber];
         //savings.LEVEL=Level_data.levels[levelNumber];
         backgroundIV.setLayoutY(-(600 * (3)));
         scorefield = new Text("Your score:");
@@ -125,8 +125,7 @@ public class Game {
         return appRoot;
     }
 
-    private void scrollBackgroundIV() {
-        //double step=0.05;                                    //okay speed?
+    private void scrollBackgroundIV() {//okay speed?
         double step = 0.5;
         double currentLayoutBack = backgroundIV.getLayoutY();
         try {
@@ -134,12 +133,8 @@ public class Game {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        //Consumer<? super Block> consumer = block->block.moveDown(step);
         Game.blocks.forEach(block -> block.setTranslateY(block.getTranslateY() + step));
         backgroundIV.setLayoutY(currentLayoutBack + step);
-        //for (Block block : Game.blocks) {
-        //    block.setTranslateY(block.getTranslateY()+step);
-        // }
     }
 
     private void goToNewLevel() {
@@ -243,10 +238,10 @@ public class Game {
                     buffer.bonus.play();
                 //}
                 int currentLine = (int) (buffer.getY() / BLOCK_SIZE);
-                String line = level[currentLine];
+               /* String line = level[currentLine];
                 char[] charline = line.toCharArray();
                 charline[(int) (buffer.getX() / BLOCK_SIZE)] = '0';
-                level[currentLine] = String.valueOf(charline);
+                level[currentLine] = String.valueOf(charline);*/
                 //savings.LEVEL = level;
                 blocks.remove(buffer);
                 Score++;
@@ -323,14 +318,19 @@ public class Game {
         lives.setText("5");
         Score = 0;
         Life = 5;
-        int i = 0;
+        goToLevel(levelNumber);
+        /*int i = 0;
         while (i < blocks.size()) {
             Block buffer = blocks.get(i);
             buffer.setVisible(false);
             gameRoot.getChildren().remove(buffer);
             i++;
+        }*/
+        /*for (Block e : blocks) {
+            e.setVisible(false);
+            gameRoot.getChildren().remove(e);
         }
-        blocks.clear();
+        blocks.clear();*/
         for (Bonus e : bonuses) {
             e.setVisible(false);
             gameRoot.getChildren().remove(e);
@@ -339,11 +339,11 @@ public class Game {
         bonusManager.removeAll();
         //Create_blocks(Level_data.levels[levelNumber]);
         //levelNumber=0;
-        Create_blocks(Level_data.levels[levelNumber]);
+        //Create_blocks(Level_data.levels[levelNumber]);
         //scrollBackgroundIV();
     }
 
-    public void loadSavings(GameSavings savings) {
+    /*public void loadSavings(GameSavings savings) {
         ball.setTranslateX(savings.ballX);
         ball.setTranslateY(savings.ballY);
         ball.velocityX = savings.ball_velocityX;
@@ -365,7 +365,7 @@ public class Game {
         blocks.clear();
         level = savings.LEVEL;
         Create_blocks(savings.LEVEL);
-    }
+    }*/
 
     private boolean loadRecord(GameRecord record, int i) {
         if (i <= records.record.size()) {
